@@ -1,0 +1,834 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<title>VictorMillers Sales Book</title>
+<meta name="theme-color" content="#047857">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="VM Sales Book">
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+  :root{
+    --bg:#f5f7fa; --card:#fff; --line:#e2e8f0; --text:#0f172a; --muted:#64748b;
+    --green:#10b981; --green-dark:#047857; --green-soft:#ecfdf5;
+    --amber:#f59e0b; --amber-soft:#fffbeb; --red:#ef4444; --red-soft:#fef2f2;
+    --blue:#3b82f6; --blue-soft:#eff6ff; --purple:#8b5cf6; --radius:14px;
+  }
+  [hidden]{display:none!important}
+  html,body{min-height:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    padding:20px 16px calc(60px + env(safe-area-inset-bottom));
+    max-width:1080px; margin-left:auto; margin-right:auto;
+    -webkit-font-smoothing:antialiased; font-size:15px; line-height:1.4;
+  }
+  h1,h2{margin:0;font-weight:700;letter-spacing:-.02em}
+  h1{font-size:clamp(21px,3vw,26px)}
+  h2{font-size:16px}
+  .muted{color:var(--muted);font-size:13px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px;margin-bottom:14px;box-shadow:0 1px 3px rgba(15,23,42,.04),0 8px 24px -20px rgba(15,23,42,.25)}
+  .card-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+
+  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+  .sub{margin:4px 0 0;color:var(--muted);font-size:13.5px}
+  .top-actions{display:flex;gap:8px}
+  .icon-btn{width:40px;height:40px;border-radius:11px;background:var(--card);border:1px solid var(--line);
+    color:var(--text);font-size:16px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:.15s}
+  .icon-btn:hover{background:#f1f5f9;border-color:#cbd5e1}
+  .icon-btn.danger:hover{background:var(--red-soft);border-color:#fecaca;color:var(--red)}
+  .icon-btn.pulse{animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.5)}50%{box-shadow:0 0 0 8px rgba(16,185,129,0)}}
+
+  .banner{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;margin-bottom:14px;
+    font-size:13.5px;line-height:1.45;border:1px solid #fde68a;background:var(--amber-soft);color:#92400e}
+  .banner .b-txt{flex:1}
+  .banner button{flex:none}
+  .banner.info{border-color:#bfdbfe;background:#eff6ff;color:#1e40af}
+
+  .hero{background:linear-gradient(135deg,#047857 0%,#059669 55%,#10b981 100%);color:#fff;
+    border-radius:20px;padding:24px 24px 20px;margin-bottom:14px;
+    box-shadow:0 12px 32px -20px #047857;position:relative;overflow:hidden}
+  .hero::after{content:"";position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(600px 220px at 100% 0%,rgba(255,255,255,.12),transparent 60%)}
+  .hero-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;position:relative}
+  .hero-label{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;opacity:.85}
+  .hero-date{font-size:13px;opacity:.8}
+  .hero-value{font-size:clamp(31px,5vw,44px);font-weight:800;letter-spacing:-.03em;margin:8px 0 4px;line-height:1;position:relative}
+  .hero-sub{font-size:14px;opacity:.92;position:relative}
+  .hero-sub .dot{opacity:.5;margin:0 6px}
+  .hero-spark{height:44px;margin-top:12px;position:relative}
+
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:12px;margin-bottom:14px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:0 1px 3px rgba(15,23,42,.04)}
+  .kpi-label{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+  .kpi-value{font-size:clamp(19px,2.6vw,24px);font-weight:800;letter-spacing:-.02em;margin:6px 0 2px;font-variant-numeric:tabular-nums}
+  .kpi-sub{font-size:12px;color:var(--muted)}
+  .kpi.warn{border-color:#fde68a;background:linear-gradient(180deg,#fffbeb,#fff)}
+  .kpi.warn .kpi-value{color:#b45309}
+  .kpi.profit{border-color:#bbf7d0;background:linear-gradient(180deg,#f0fdf4,#fff)}
+  .kpi.profit .kpi-value{color:#047857}
+
+  .sale-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:12px;align-items:end}
+  .sale-form label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted);
+    font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+  .sale-form .full{grid-column:1/-1}
+  .sale-form input,.sale-form select{background:#fff;border:1px solid #cbd5e1;color:var(--text);
+    padding:10px 12px;border-radius:10px;font:inherit;font-size:15px;font-weight:500;outline:none;width:100%;transition:.15s}
+  .sale-form input::placeholder{color:#94a3b8;font-weight:400}
+  .sale-form input:focus,.sale-form select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(16,185,129,.16)}
+  .naira-input{position:relative;display:flex;align-items:center}
+  .naira-input .naira{position:absolute;left:12px;color:#64748b;font-weight:700;pointer-events:none;font-size:15px}
+  .naira-input input{padding-left:30px}
+  
+  .btn-primary{appearance:none;border:0;cursor:pointer;background:linear-gradient(180deg,#10b981,#059669);
+    color:#fff;font:inherit;font-size:15px;font-weight:700;padding:12px 20px;border-radius:12px;
+    box-shadow:0 8px 20px -10px rgba(16,185,129,.9);transition:.15s; display:inline-flex; align-items:center; justify-content:center; gap: 8px;}
+  .btn-primary:hover{filter:brightness(1.06);transform:translateY(-1px)}
+  .btn-primary:active{transform:translateY(0)}
+  .btn-expense{background:linear-gradient(180deg,#ef4444,#dc2626);box-shadow:0 8px 20px -10px rgba(239,68,68,.9)}
+  
+  .quick-picks{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;align-items:center}
+  .qp-label{font-size:12px;color:var(--muted);font-weight:600;margin-right:2px}
+  .qp-chip{appearance:none;cursor:pointer;background:#f1f5f9;border:1px solid var(--line);color:#334155;
+    padding:5px 11px;border-radius:999px;font:inherit;font-size:12.5px;font-weight:600;transition:.15s}
+  .qp-chip:hover{background:var(--green-soft);border-color:#a7f3d0;color:var(--green-dark)}
+
+  .table-wrap{overflow-x:auto;border-radius:10px;-webkit-overflow-scrolling:touch}
+  .tbl{width:100%;border-collapse:collapse;font-size:14px;min-width:660px}
+  .tbl th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);
+    font-weight:700;padding:0 10px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+  .tbl td{padding:11px 10px;border-bottom:1px solid #f1f5f9;vertical-align:middle}
+  .tbl tr:last-child td{border-bottom:0}
+  .tbl tbody tr:hover td{background:#f8fafc}
+  .tbl .num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+  .del-btn{width:28px;height:28px;border-radius:8px;border:0;background:transparent;color:#94a3b8;
+    cursor:pointer;font-size:16px;line-height:1;display:inline-flex;align-items:center;justify-content:center;transition:.15s}
+  .del-btn:hover{background:var(--red-soft);color:var(--red)}
+
+  .badge{display:inline-block;padding:3px 9px;border-radius:6px;font-size:11.5px;font-weight:700;white-space:nowrap}
+  .b-cash{background:#ecfdf5;color:#047857}
+  .b-transfer{background:#eff6ff;color:#1d4ed8}
+  .b-pos{background:#f3e8ff;color:#6d28d9}
+  .b-opay{background:#fff7ed;color:#c2410c}
+  .b-moniepoint{background:#fef2f2;color:#b91c1c}
+  .b-palmpay{background:#ecfeff;color:#0e7490}
+  .b-credit{background:#fef2f2;color:#b91c1c}
+  .b-partial{background:#fffbeb;color:#b45309}
+  .b-paid{background:#f1f5f9;color:#475569}
+  .bal-red{color:#dc2626;font-weight:700}
+  .bal-ok{color:#94a3b8;font-weight:600}
+
+  .debt-card{border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:12px;
+    padding:14px 16px;margin-bottom:10px;background:#fff}
+  .debt-card:last-child{margin-bottom:0}
+  .debt-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+  .debt-name{font-weight:700;font-size:15px}
+  .debt-items{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .debt-amount{font-weight:800;font-size:18px;color:#b45309;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .debt-progress{margin-bottom:12px}
+  .debt-progress-bar{height:7px;background:#f1f5f9;border-radius:99px;overflow:hidden;margin-bottom:5px}
+  .debt-progress-bar > div{height:100%;background:linear-gradient(90deg,#34d399,#10b981);border-radius:99px;transition:width .4s}
+  .debt-progress-text{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .debt-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .btn-sm{appearance:none;cursor:pointer;font:inherit;font-size:13px;font-weight:600;padding:8px 14px;
+    border-radius:9px;border:1px solid var(--line);background:#fff;color:var(--text);transition:.15s;
+    text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+  .btn-sm:hover{background:#f8fafc}
+  .btn-wa{background:#ecfdf5;border-color:#a7f3d0;color:#047857}
+  .btn-wa:hover{background:#d1fae5}
+  .btn-paid{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
+  .btn-paid:hover{background:#dbeafe}
+
+  .pay-history{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+  .ph-row{display:flex;align-items:center;gap:10px;font-size:13px;padding:7px 0;border-bottom:1px solid #f8fafc}
+  .ph-row:last-child{border-bottom:0}
+  .ph-date{color:var(--muted);min-width:70px;font-size:12px}
+  .ph-amt{font-weight:700;font-variant-numeric:tabular-nums;min-width:88px}
+  .ph-meta{flex:1;color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ph-del{width:24px;height:24px;border:0;background:transparent;color:#cbd5e1;cursor:pointer;
+    border-radius:6px;font-size:14px;line-height:1}
+  .ph-del:hover{background:var(--red-soft);color:var(--red)}
+
+  .charts-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+  @media(max-width:760px){.charts-row{grid-template-columns:1fr}}
+  .vbars{display:flex;gap:6px;align-items:flex-end;height:170px;padding-top:8px}
+  .vbar{flex:1;display:flex;flex-direction:column;height:100%;gap:6px;min-width:0}
+  .vbar-col{flex:1;display:flex;align-items:flex-end;background:#f1f5f9;border-radius:6px;overflow:hidden}
+  .vbar-fill{width:100%;border-radius:6px;min-height:2px;background:linear-gradient(180deg,#34d399,#10b981);
+    transition:height .4s cubic-bezier(.4,0,.2,1)}
+  .vbar-lbl{font-size:10.5px;color:var(--muted);text-align:center;font-weight:600}
+  .hbar{margin-bottom:14px}
+  .hbar:last-child{margin-bottom:0}
+  .hbar-top{display:flex;justify-content:space-between;gap:10px;font-size:13px;margin-bottom:6px}
+  .hbar-top .val{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .hbar-track{height:9px;background:#f1f5f9;border-radius:99px;overflow:hidden}
+  .hbar-fill{height:100%;border-radius:99px;transition:width .45s cubic-bezier(.4,0,.2,1)}
+
+  .empty-box{padding:28px 12px;text-align:center;color:var(--muted);font-size:13.5px;line-height:1.55}
+  .empty-box .big{font-size:22px;margin-bottom:6px;display:block}
+
+  .modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);backdrop-filter:blur(3px);
+    display:flex;align-items:flex-end;justify-content:center;z-index:100;padding:0}
+  @media(min-width:560px){.modal-overlay{align-items:center;padding:20px}}
+  .modal{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:440px;
+    padding:22px 20px calc(22px + env(safe-area-inset-bottom));max-height:92vh;overflow-y:auto;
+    animation:slideUp .22s cubic-bezier(.4,0,.2,1)}
+  @media(min-width:560px){.modal{border-radius:18px;padding-bottom:22px;animation:pop .18s ease-out}}
+  @keyframes slideUp{from{transform:translateY(40px);opacity:.6}to{transform:translateY(0);opacity:1}}
+  @keyframes pop{from{transform:scale(.96);opacity:.6}to{transform:scale(1);opacity:1}}
+  .modal h3{margin:0 0 4px;font-size:18px}
+  .modal-sub{margin:0 0 14px;color:var(--muted);font-size:13.5px}
+  .modal-balance{background:var(--amber-soft);border:1px solid #fde68a;border-radius:11px;
+    padding:12px 14px;margin-bottom:16px;font-size:13.5px;color:#92400e}
+  .modal-balance strong{font-size:19px;font-weight:800;color:#b45309;display:block;margin-top:2px}
+  .modal label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted);
+    font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px}
+  .modal input,.modal select{background:#fff;border:1px solid #cbd5e1;color:var(--text);
+    padding:11px 12px;border-radius:10px;font:inherit;font-size:15px;font-weight:500;outline:none;width:100%}
+  .modal input:focus,.modal select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(16,185,129,.16)}
+  .quick-amounts{display:flex;gap:8px;flex-wrap:wrap;margin:-6px 0 14px}
+  .quick-amounts button{appearance:none;cursor:pointer;background:#f1f5f9;border:1px solid var(--line);
+    color:#334155;padding:6px 12px;border-radius:999px;font:inherit;font-size:12.5px;font-weight:600}
+  .quick-amounts button:hover{background:var(--green-soft);border-color:#a7f3d0;color:var(--green-dark)}
+  .modal-actions{display:flex;gap:10px;margin-top:6px}
+  .modal-actions .btn-sm{flex:1;justify-content:center;padding:12px;font-size:14.5px}
+  .modal-actions .btn-primary{flex:1.4}
+
+  footer{margin-top:20px;text-align:center;color:#94a3b8;font-size:12px;line-height:1.5}
+
+  #toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,20px);
+    background:#0f172a;color:#fff;padding:11px 20px;border-radius:999px;font-size:14px;font-weight:600;
+    opacity:0;pointer-events:none;transition:.25s;z-index:200;box-shadow:0 12px 30px -12px rgba(0,0,0,.5);
+    max-width:90vw;text-align:center}
+  #toast.show{opacity:1;transform:translate(-50%,0)}
+
+  @media(max-width:480px){
+    body{padding:14px 12px calc(60px + env(safe-area-inset-bottom))}
+    .hero{padding:20px 18px 16px}
+    .card{padding:14px}
+    .kpi{padding:13px}
+  }
+
+  /* compact layout */
+  body{padding:12px 12px calc(48px + env(safe-area-inset-bottom));font-size:14px}
+  h1{font-size:clamp(18px,5vw,22px)}
+  .top{margin-bottom:10px;gap:10px;flex-wrap:nowrap}
+  .sub{margin:2px 0 0;font-size:12px}
+  .icon-btn{width:34px;height:34px;border-radius:9px;font-size:14px}
+  .hero{padding:14px 16px 12px;border-radius:16px;margin-bottom:10px}
+  .hero-value{font-size:clamp(26px,7vw,34px);margin:4px 0 2px}
+  .hero-sub{font-size:13px}
+  .hero-spark{height:24px;margin-top:8px}
+  .kpis{gap:8px;margin-bottom:10px}
+  .kpi{padding:10px 12px;border-radius:12px}
+  .kpi-label{font-size:10.5px}
+  .kpi-value{font-size:clamp(16px,4.5vw,20px);margin:3px 0 1px}
+  .kpi-sub{font-size:11px}
+  .card{padding:12px;margin-bottom:10px;border-radius:12px}
+  .card-head{margin-bottom:10px}
+  .sale-form{gap:8px}
+  .sale-form input,.sale-form select{padding:8px 10px;font-size:14px}
+  .btn-primary{padding:10px 16px;font-size:14px}
+  .banner{padding:9px 12px;margin-bottom:10px}
+
+  /* fixes: naira sign overlap + typing jitter */
+  .sale-form{align-items:start}
+  .sale-form input,.sale-form select,.modal input,.modal select{font-size:16px;transition:none;min-height:42px}
+  .naira-input{width:100%}
+  .sale-form .naira-input input{padding-left:30px}
+  html,body{overflow-anchor:none}
+  input,select,button{touch-action:manipulation}
+  input,select{scroll-margin-top:140px;scroll-margin-bottom:140px}
+
+  /* page scrolls inside body so the host app's toolbar can't jump the screen while typing */
+  html{height:100%;overflow:hidden;overscroll-behavior:none}
+  body{height:100%;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+
+  /* hero 7-day chart */
+  .hero-spark{height:auto;margin-top:12px}
+  .hs{display:flex;gap:6px;align-items:flex-end}
+  .hs-col{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center}
+  .hs-track{height:74px;width:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
+  .hs-val{font-size:10px;font-weight:700;opacity:.95;margin-bottom:3px;white-space:nowrap;line-height:1;height:10px}
+  .hs-bar{width:100%;max-width:38px;border-radius:6px 6px 3px 3px;background:rgba(255,255,255,.35)}
+  .hs-col.today .hs-bar{background:#fff}
+  .hs-lbl{font-size:10.5px;margin-top:5px;opacity:.85;font-weight:600}
+  .hs-col.today .hs-lbl{opacity:1;font-weight:800}
+</style>
+</head>
+<body>
+
+<noscript>
+  <div style="background:#fef2f2;border:2px solid #fecaca;color:#991b1b;padding:16px;border-radius:12px;margin-bottom:14px;font-size:14px;">
+    <strong>⚠️ JavaScript is turned off.</strong><br>
+    This app needs JavaScript to work. Open your browser settings and enable it, then reload.
+  </div>
+</noscript>
+
+<header class="top">
+  <div>
+    <h1>VictorMillers Sales Book</h1>
+    <p class="sub">Simple sales tracking</p>
+  </div>
+  <div class="top-actions">
+    <button class="icon-btn pulse" id="btnInstall" title="Install app" hidden>📲</button>
+    <button class="icon-btn danger" id="btnClear" title="Clear all data">✕</button>
+  </div>
+</header>
+
+<div class="banner" id="backupBanner" hidden>
+  <span class="b-txt" id="backupMsg"></span>
+  <button class="btn-sm btn-paid" id="bannerBackup">Back up now</button>
+</div>
+
+<div class="banner info" id="installBanner" hidden>
+  <span class="b-txt" id="installMsg"></span>
+  <button class="btn-sm" id="installDismiss">Got it</button>
+</div>
+
+<section class="hero">
+  <div class="hero-head">
+    <span class="hero-label">Today's Sales</span>
+    <span class="hero-date" id="todayDate">—</span>
+  </div>
+  <div class="hero-value" id="todayValue">₦0</div>
+  <div class="hero-sub">
+    <span id="todayCount">0 sales</span>
+    <span class="dot">·</span>
+    <span id="todayProfit">Profit: ₦0</span>
+  </div>
+  <div class="hero-spark" id="todaySpark"></div>
+</section>
+
+<section class="kpis">
+  <div class="kpi">
+    <div class="kpi-label">Last 7 Days Sales</div>
+    <div class="kpi-value" id="weekValue">₦0</div>
+    <div class="kpi-sub" id="weekSub">0 sales</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Last 30 Days Sales</div>
+    <div class="kpi-value" id="monthValue">₦0</div>
+    <div class="kpi-sub" id="monthSub">0 sales</div>
+  </div>
+  <div class="kpi warn">
+    <div class="kpi-label">Money Owed to You</div>
+    <div class="kpi-value" id="owedValue">₦0</div>
+    <div class="kpi-sub" id="owedSub">0 customers</div>
+  </div>
+  <div class="kpi profit">
+    <div class="kpi-label">Net Profit (30 Days)</div>
+    <div class="kpi-value" id="profitValue">—</div>
+    <div class="kpi-sub" id="profitSub">—</div>
+  </div>
+</section>
+
+<section class="card">
+  <div class="card-head">
+    <h2>Record a Sale</h2>
+    <span class="muted">Fill and tap Add Sale</span>
+  </div>
+  <form class="sale-form" id="saleForm" autocomplete="off">
+    <label class="full">Product / Item
+      <input type="text" id="fProduct" list="prodList" placeholder="e.g. Bag of rice" required>
+      <datalist id="prodList"></datalist>
+    </label>
+    <label>Qty
+      <input type="text" id="fQty" inputmode="numeric" min="1" step="1" value="1" required>
+    </label>
+    <label>Price per unit
+      <span class="naira-input"><span class="naira">₦</span><input type="text" id="fPrice" inputmode="decimal" min="0" step="0.01" placeholder="0" required></span>
+    </label>
+    <label>Payment
+      <select id="fPayment">
+        <option value="Cash">Cash</option>
+        <option value="Bank Transfer">Bank Transfer</option>
+        <option value="POS">POS</option>
+        <option value="Opay">Opay</option>
+        <option value="Moniepoint">Moniepoint</option>
+        <option value="PalmPay">PalmPay</option>
+        <option value="Credit (Owe)">Credit (Owe)</option>
+      </select>
+    </label>
+    <label>Customer
+      <input type="text" id="fCustomer" list="custList" placeholder="Optional">
+      <datalist id="custList"></datalist>
+    </label>
+    <label>Customer phone
+      <input type="text" id="fPhone" inputmode="tel" placeholder="Optional, e.g. 0803...">
+    </label>
+    <label>Cost per unit
+      <span class="naira-input"><span class="naira">₦</span><input type="text" id="fCost" inputmode="decimal" min="0" step="0.01" placeholder="For profit"></span>
+    </label>
+    <label>Date
+      <input type="date" id="fDate">
+    </label>
+    <label>Delivery fee
+      <span class="naira-input"><span class="naira">₦</span><input type="text" id="fFee" inputmode="decimal" placeholder="Optional"></span>
+    </label>
+    <label>Order status
+      <select id="fStatus">
+        <option value="Delivered">Delivered</option>
+        <option value="Pending">Pending delivery</option>
+      </select>
+    </label>
+    <label id="depositLabel" hidden>Paid now <span style="text-transform:none;letter-spacing:0;color:#94a3b8;font-weight:500">(deposit)</span>
+      <span class="naira-input"><span class="naira">₦</span><input type="text" id="fDeposit" inputmode="decimal" min="0" step="0.01" placeholder="0"></span>
+    </label>
+    <button type="submit" class="btn-primary full">+ Add Sale</button>
+  </form>
+  <div class="quick-picks" id="quickPicks"></div>
+</section>
+
+<section class="card">
+  <div class="card-head">
+    <h2>Record an Expense</h2>
+    <span class="muted">Transport, data, rent, etc.</span>
+  </div>
+  <form class="sale-form" id="expenseForm" autocomplete="off">
+    <label class="full">Description
+      <input type="text" id="eDesc" placeholder="e.g. Bike transport to market" required>
+    </label>
+    <label>Amount
+      <span class="naira-input"><span class="naira">₦</span><input type="text" id="eAmount" inputmode="decimal" min="0" step="0.01" placeholder="0" required></span>
+    </label>
+    <label>Date
+      <input type="date" id="eDate">
+    </label>
+    <button type="submit" class="btn-primary btn-expense full">- Add Expense</button>
+  </form>
+</section>
+
+<!-- PROTECT YOUR DATA SECTION -->
+<section class="card" style="border-left: 4px solid #3b82f6;">
+  <div class="card-head">
+    <h2>🛡️ Protect Your Data</h2>
+    <span class="muted">Save a copy</span>
+  </div>
+  <p class="muted" style="margin-bottom: 14px; line-height: 1.5;">
+    Your records are saved inside this phone. If you change phones, clear your browser history, or lose this phone, you will lose your records. <b>Please save a backup file every week.</b>
+  </p>
+  <div style="display: flex; flex-direction: column; gap: 10px;">
+    <button type="button" class="btn-primary" id="btnBigBackup" style="width: 100%; background: linear-gradient(180deg,#3b82f6,#2563eb); border: none; color: white; padding: 14px; border-radius: 10px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 12px rgba(59,130,246,0.3);">📥 Save Backup</button>
+    <button type="button" class="btn-primary" id="btnBigRestore" style="width: 100%; background: #ffffff; border: 1px solid #cbd5e1; color: #334155; padding: 14px; border-radius: 10px; font-weight: bold; font-size: 16px;">📤 Restore Data</button>
+  </div>
+</section>
+
+<section class="card">
+  <div class="card-head"><h2>How You Got Paid</h2><span class="muted">Last 30 days</span></div>
+  <div id="payBars"></div>
+</section>
+
+<section class="card" id="delCard" style="border-left:4px solid #3b82f6" hidden>
+  <div class="card-head"><h2>Orders to Deliver</h2><span class="muted" id="delCount"></span></div>
+  <div id="delList"></div>
+</section>
+
+<section class="card" id="debtCard" style="border-left:4px solid #f59e0b" hidden>
+  <div class="card-head"><h2>Who Owes You</h2><span class="muted">Tap to remind or record payment</span></div>
+  <div id="debtList"></div>
+</section>
+
+<section class="card">
+  <div class="card-head"><h2>Recent Sales</h2><span class="muted" id="salesCount"></span></div>
+  <div class="table-wrap">
+    <table class="tbl">
+      <thead><tr><th>Date</th><th>Item</th><th class="num">Qty</th><th class="num">Total</th><th>Payment</th><th>Customer</th><th class="num">Owing</th><th></th></tr></thead>
+      <tbody id="salesBody"></tbody>
+    </table>
+  </div>
+  <div class="empty-box" id="salesEmpty"><span class="big">🧾</span>No sales yet. Fill the form above and tap Add Sale.</div>
+</section>
+
+<section class="card" id="expCard" hidden>
+  <div class="card-head"><h2>Recent Expenses</h2><span class="muted" id="expTotal"></span></div>
+  <div class="table-wrap">
+    <table class="tbl" style="min-width:420px">
+      <thead><tr><th>Date</th><th>Description</th><th class="num">Amount</th><th></th></tr></thead>
+      <tbody id="expBody"></tbody>
+    </table>
+  </div>
+</section>
+
+<footer>VictorMillers Sales Book · Your records stay on this phone.<br>Back up weekly.</footer>
+
+<div class="modal-overlay" id="payModal" hidden>
+  <div class="modal">
+    <h3 id="pmName">Record payment</h3>
+    <p class="modal-sub">Money this customer is paying you now</p>
+    <div class="modal-balance">Still owing<strong id="pmBal">₦0</strong></div>
+    <label>Amount paid
+      <input type="text" id="pmAmt" inputmode="decimal" min="0" step="0.01" placeholder="0">
+    </label>
+    <div class="quick-amounts"><button type="button" id="pmFull">Pay full balance</button><button type="button" id="pmHalf">Half</button></div>
+    <label>Paid with
+      <select id="pmMethod">
+        <option>Cash</option><option>Bank Transfer</option><option>POS</option><option>Opay</option><option>Moniepoint</option><option>PalmPay</option>
+      </select>
+    </label>
+    <div class="modal-actions">
+      <button type="button" class="btn-sm" id="pmCancel">Cancel</button>
+      <button type="button" class="btn-primary" id="pmSave">Save payment</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function(){
+  var KEY='salesbook_v1', BK='salesbook_lastbackup';
+  var state={sales:[],expenses:[],phones:{}};
+  var payTarget=null, openHist={};
+
+  function load(){
+    try{var r=localStorage.getItem(KEY); if(r){var d=JSON.parse(r); state.sales=d.sales||[]; state.expenses=d.expenses||[]; state.phones=d.phones||{};}}catch(e){}
+  }
+  function save(){
+    try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){toast('Could not save. Storage may be full or blocked.');}
+  }
+  function $(id){return document.getElementById(id);}
+  function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+  function pad(n){return n<10?'0'+n:''+n;}
+  function ymd(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+  function today(){return ymd(new Date());}
+  function daysAgo(n){var d=new Date();d.setDate(d.getDate()-n);return ymd(d);}
+  function naira(n){n=Math.round((n||0)*100)/100;return '₦'+n.toLocaleString('en-NG',{maximumFractionDigits:2});}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function fmtDate(s){var p=s.split('-');var d=new Date(+p[0],+p[1]-1,+p[2]);return d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});}
+  var tt;
+  function toast(m){var t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(function(){t.classList.remove('show');},2600);}
+
+  function waNum(p){
+    var d=String(p||'').replace(/[^0-9]/g,'');
+    if(!d)return '';
+    if(d.indexOf('234')===0)return d;
+    if(d.charAt(0)==='0')return '234'+d.slice(1);
+    return d.length<=10?'234'+d:d;
+  }
+  function openWA(phone,text){window.open('https://wa.me/'+waNum(phone)+'?text='+encodeURIComponent(text),'_blank');}
+  function receiptText(s){
+    var lines=['🧾 *RECEIPT*','Date: '+fmtDate(s.date)];
+    if(s.customer)lines.push('Customer: '+s.customer);
+    lines.push('',s.qty+' × '+s.product+' @ '+naira(s.price)+' = '+naira(s.qty*s.price));
+    if(s.fee)lines.push('Delivery: '+naira(s.fee));
+    lines.push('*Total: '+naira(s.total)+'*','Paid: '+naira(paid(s)));
+    if(bal(s)>0)lines.push('*Balance owing: '+naira(bal(s))+'*');
+    lines.push('Payment: '+s.payment,'Status: '+(s.delivery==='Pending'?'Pending delivery':'Delivered'),'','Thank you for your patronage 🙏');
+    return lines.join('\n');
+  }
+  function sendReceipt(id){
+    var s=state.sales.filter(function(x){return x.id===id;})[0]; if(!s)return;
+    openWA(state.phones[(s.customer||'').toLowerCase()],receiptText(s));
+  }
+  function paid(s){return s.payments.reduce(function(a,p){return a+p.amt;},0);}
+  function bal(s){return Math.max(0,Math.round((s.total-paid(s))*100)/100);}
+  function badgeClass(m){
+    if(m==='Cash')return 'b-cash'; if(m==='Bank Transfer')return 'b-transfer'; if(m==='POS')return 'b-pos';
+    if(m==='Opay')return 'b-opay'; if(m==='Moniepoint')return 'b-moniepoint'; if(m==='PalmPay')return 'b-palmpay'; return 'b-credit';
+  }
+  function sumSales(from,to){
+    var t=0,c=0,p=0;
+    state.sales.forEach(function(s){
+      if(s.date>=from&&s.date<=to){t+=s.total;c++; if(s.cost!=null)p+=(s.price-s.cost)*s.qty;}
+    });
+    return {total:t,count:c,profit:p};
+  }
+  function sumExp(from,to){
+    return state.expenses.reduce(function(a,e){return (e.date>=from&&e.date<=to)?a+e.amount:a;},0);
+  }
+
+  function renderDash(){
+    var td=today(), tS=sumSales(td,td);
+    $('todayDate').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+    $('todayValue').textContent=naira(tS.total);
+    $('todayCount').textContent=tS.count+(tS.count===1?' sale':' sales');
+    $('todayProfit').textContent='Profit: '+naira(tS.profit);
+    var w=sumSales(daysAgo(6),td), m=sumSales(daysAgo(29),td);
+    $('weekValue').textContent=naira(w.total); $('weekSub').textContent=w.count+(w.count===1?' sale':' sales');
+    $('monthValue').textContent=naira(m.total); $('monthSub').textContent=m.count+(m.count===1?' sale':' sales');
+
+    var owed=0,people={};
+    state.sales.forEach(function(s){var b=bal(s); if(b>0){owed+=b; people[(s.customer||'No name').toLowerCase()]=1;}});
+    var n=Object.keys(people).length;
+    $('owedValue').textContent=naira(owed); $('owedSub').textContent=n+(n===1?' customer':' customers');
+
+    var exp=sumExp(daysAgo(29),td);
+    if(m.profit||exp){
+      $('profitValue').textContent=naira(m.profit-exp);
+      $('profitSub').textContent='Profit '+naira(m.profit)+' − expenses '+naira(exp);
+    }else{
+      $('profitValue').textContent='—'; $('profitSub').textContent='Add cost per unit to see profit';
+    }
+
+    // days array
+    var days=[],max=1,i;
+    for(i=6;i>=0;i--){var d=daysAgo(i),v=sumSales(d,d).total;days.push({d:d,v:v});if(v>max)max=v;}
+    // hero 7-day chart
+    function short(n){
+      if(!n)return '';
+      if(n>=1e6)return (n/1e6).toFixed(1).replace('.0','')+'M';
+      if(n>=1e3)return (n/1e3).toFixed(n>=1e5?0:1).replace('.0','')+'k';
+      return String(Math.round(n));
+    }
+    $('todaySpark').innerHTML='<div class="hs">'+days.map(function(x,k){
+      var bh=x.v?Math.max(4,Math.round(x.v/max*52)):3;
+      var dn=new Date(x.d+'T00:00:00').toLocaleDateString('en-GB',{weekday:'short'});
+      return '<div class="hs-col'+(k===6?' today':'')+'"><div class="hs-track"><div class="hs-val">'+short(x.v)+'</div><div class="hs-bar" style="height:'+bh+'px"></div></div><div class="hs-lbl">'+(k===6?'Today':dn)+'</div></div>';
+    }).join('')+'</div>';
+    // payment methods (money actually received in last 30 days by sale date)
+    var by={},from=daysAgo(29);
+    state.sales.forEach(function(s){if(s.date>=from&&s.date<=td){by[s.payment]=(by[s.payment]||0)+s.total;}});
+    var keys=Object.keys(by).sort(function(a,b){return by[b]-by[a];}), tot=keys.reduce(function(a,k){return a+by[k];},0);
+    var colors={'Cash':'#10b981','Bank Transfer':'#3b82f6','POS':'#8b5cf6','Opay':'#f97316','Moniepoint':'#ef4444','PalmPay':'#06b6d4','Credit (Owe)':'#f59e0b'};
+    $('payBars').innerHTML=keys.length?keys.map(function(k){
+      return '<div class="hbar"><div class="hbar-top"><span>'+esc(k)+'</span><span class="val">'+naira(by[k])+'</span></div><div class="hbar-track"><div class="hbar-fill" style="width:'+(by[k]/tot*100)+'%;background:'+colors[k]+'"></div></div></div>';
+    }).join(''):'<div class="empty-box">No sales in the last 30 days.</div>';
+  }
+
+  function renderLists(){
+    // datalists + quick picks
+    var prods={},custs={};
+    state.sales.slice().sort(function(a,b){return a.date<b.date?1:-1;}).forEach(function(s){
+      if(!prods[s.product])prods[s.product]={price:s.price,cost:s.cost,n:0}; prods[s.product].n++;
+      if(s.customer)custs[s.customer]=1;
+    });
+    $('prodList').innerHTML=Object.keys(prods).map(function(p){return '<option value="'+esc(p)+'">';}).join('');
+    $('custList').innerHTML=Object.keys(custs).map(function(c){return '<option value="'+esc(c)+'">';}).join('');
+    var top=Object.keys(prods).sort(function(a,b){return prods[b].n-prods[a].n;}).slice(0,6);
+    $('quickPicks').innerHTML=top.length?'<span class="qp-label">Quick:</span>'+top.map(function(p){
+      return '<button type="button" class="qp-chip" data-p="'+esc(p)+'">'+esc(p)+'</button>';}).join(''):'';
+    $('quickPicks').querySelectorAll('.qp-chip').forEach(function(b){
+      b.onclick=function(){var p=prods[b.getAttribute('data-p')];$('fProduct').value=b.getAttribute('data-p');$('fPrice').value=p.price;$('fCost').value=p.cost==null?'':p.cost;$('fQty').focus();};
+    });
+
+    // sales table
+    var rows=state.sales.slice().sort(function(a,b){return a.date===b.date?(a.id<b.id?1:-1):(a.date<b.date?1:-1);}).slice(0,50);
+    $('salesCount').textContent=state.sales.length+(state.sales.length===1?' sale':' sales')+' total';
+    $('salesEmpty').hidden=state.sales.length>0;
+    $('salesBody').innerHTML=rows.map(function(s){
+      var b=bal(s);
+      return '<tr><td>'+fmtDate(s.date)+'</td><td>'+esc(s.product)+(s.delivery==='Pending'?' <span class="badge b-partial">Pending</span>':'')+'</td><td class="num">'+s.qty+'</td><td class="num">'+naira(s.total)+
+        '</td><td><span class="badge '+badgeClass(s.payment)+'">'+esc(s.payment)+'</span></td><td>'+esc(s.customer||'—')+
+        '</td><td class="num '+(b>0?'bal-red':'bal-ok')+'">'+(b>0?naira(b):'—')+'</td><td style="white-space:nowrap"><button class="del-btn" data-rc="'+s.id+'" title="Send receipt">🧾</button><button class="del-btn" data-del="'+s.id+'" title="Delete">×</button></td></tr>';
+    }).join('');
+    $('salesBody').querySelectorAll('[data-del]').forEach(function(b){
+      b.onclick=function(){if(confirm('Delete this sale?')){state.sales=state.sales.filter(function(s){return s.id!==b.getAttribute('data-del');});save();render();toast('Sale deleted');}};
+    });
+
+    $('salesBody').querySelectorAll('[data-rc]').forEach(function(b){b.onclick=function(){sendReceipt(b.getAttribute('data-rc'));};});
+
+    // expenses
+    var ex=state.expenses.slice().sort(function(a,b){return a.date<b.date?1:-1;}).slice(0,20);
+    $('expCard').hidden=!state.expenses.length;
+    $('expTotal').textContent='Last 30 days: '+naira(sumExp(daysAgo(29),today()));
+    $('expBody').innerHTML=ex.map(function(e){
+      return '<tr><td>'+fmtDate(e.date)+'</td><td>'+esc(e.desc)+'</td><td class="num">'+naira(e.amount)+'</td><td><button class="del-btn" data-xdel="'+e.id+'" title="Delete">×</button></td></tr>';
+    }).join('');
+    $('expBody').querySelectorAll('[data-xdel]').forEach(function(b){
+      b.onclick=function(){if(confirm('Delete this expense?')){state.expenses=state.expenses.filter(function(e){return e.id!==b.getAttribute('data-xdel');});save();render();toast('Expense deleted');}};
+    });
+  }
+
+  function groupDebts(){
+    var g={};
+    state.sales.forEach(function(s){
+      var b=bal(s); if(b<=0)return;
+      var k=(s.customer||'No name').trim().toLowerCase();
+      if(!g[k])g[k]={name:s.customer||'No name',sales:[],owed:0,total:0};
+      g[k].sales.push(s); g[k].owed+=b;
+    });
+    return g;
+  }
+  function renderDebts(){
+    var g=groupDebts(), keys=Object.keys(g).sort(function(a,b){return g[b].owed-g[a].owed;});
+    $('debtCard').hidden=!keys.length;
+    $('debtList').innerHTML=keys.map(function(k){
+      var d=g[k], tot=0, pd=0, items=[];
+      d.sales.forEach(function(s){tot+=s.total;pd+=paid(s);items.push(s.qty+'× '+s.product);});
+      var pct=tot?Math.min(100,pd/tot*100):0, hist=[];
+      d.sales.forEach(function(s){s.payments.forEach(function(p){hist.push({s:s,p:p});});});
+      hist.sort(function(a,b){return a.p.date<b.p.date?1:-1;});
+      var msg='Hello '+(d.name==='No name'?'':d.name+', ')+'this is a friendly reminder that you owe '+naira(d.owed)+' for '+items.join(', ')+'. Please send it when you can. Thank you!';
+      return '<div class="debt-card"><div class="debt-head"><div><div class="debt-name">'+esc(d.name)+'</div><div class="debt-items">'+esc(items.join(', '))+'</div></div><div class="debt-amount">'+naira(d.owed)+'</div></div>'+
+        '<div class="debt-progress"><div class="debt-progress-bar"><div style="width:'+pct+'%"></div></div><div class="debt-progress-text">Paid '+naira(pd)+' of '+naira(tot)+'</div></div>'+
+        '<div class="debt-actions"><a class="btn-sm btn-wa" target="_blank" rel="noopener" href="https://wa.me/'+waNum(state.phones[k])+'?text='+encodeURIComponent(msg)+'">💬 Remind</a>'+(!state.phones[k]&&d.name!=='No name'?'<button class="btn-sm" data-ph="'+esc(k)+'" data-nm="'+esc(d.name)+'">📞 Add number</button>':'')+
+        '<button class="btn-sm btn-paid" data-pay="'+esc(k)+'">+ Record payment</button>'+
+        (hist.length?'<button class="btn-sm" data-hist="'+esc(k)+'">'+(openHist[k]?'Hide':'History')+'</button>':'')+'</div>'+
+        (openHist[k]&&hist.length?'<div class="pay-history">'+hist.map(function(h){
+          return '<div class="ph-row"><span class="ph-date">'+fmtDate(h.p.date)+'</span><span class="ph-amt">'+naira(h.p.amt)+'</span><span class="ph-meta">'+esc(h.p.method)+' · '+esc(h.s.product)+'</span><button class="ph-del" data-pd="'+h.p.id+'" title="Remove">×</button></div>';}).join('')+'</div>':'')+
+        '</div>';
+    }).join('');
+    $('debtList').querySelectorAll('[data-ph]').forEach(function(b){
+      b.onclick=function(){
+        var n=prompt('WhatsApp number for '+b.getAttribute('data-nm')+':'); if(!n)return;
+        if(!waNum(n)){toast('That number does not look right');return;}
+        state.phones[b.getAttribute('data-ph')]=n.trim(); save(); renderDebts(); toast('Number saved');
+      };
+    });
+    $('debtList').querySelectorAll('[data-pay]').forEach(function(b){b.onclick=function(){openPay(b.getAttribute('data-pay'));};});
+    $('debtList').querySelectorAll('[data-hist]').forEach(function(b){b.onclick=function(){var k=b.getAttribute('data-hist');openHist[k]=!openHist[k];renderDebts();};});
+    $('debtList').querySelectorAll('[data-pd]').forEach(function(b){
+      b.onclick=function(){
+        var id=b.getAttribute('data-pd');
+        if(!confirm('Remove this payment?'))return;
+        state.sales.forEach(function(s){s.payments=s.payments.filter(function(p){return p.id!==id;});});
+        save();render();
+      };
+    });
+  }
+
+  function renderDeliveries(){
+    var p=state.sales.filter(function(s){return s.delivery==='Pending';}).sort(function(a,b){return a.date<b.date?-1:1;});
+    $('delCard').hidden=!p.length;
+    $('delCount').textContent=p.length+(p.length===1?' order':' orders')+' waiting';
+    $('delList').innerHTML=p.map(function(s){
+      return '<div class="ph-row" style="gap:8px;flex-wrap:wrap"><span class="ph-date">'+fmtDate(s.date)+'</span>'+
+        '<span class="ph-meta" style="white-space:normal;color:var(--text);min-width:120px">'+s.qty+'× '+esc(s.product)+(s.customer?' · '+esc(s.customer):'')+'</span>'+
+        '<button class="btn-sm" data-rc="'+s.id+'" title="Send receipt">🧾</button>'+
+        '<button class="btn-sm btn-paid" data-dv="'+s.id+'">Mark delivered</button></div>';
+    }).join('');
+    $('delList').querySelectorAll('[data-rc]').forEach(function(b){b.onclick=function(){sendReceipt(b.getAttribute('data-rc'));};});
+    $('delList').querySelectorAll('[data-dv]').forEach(function(b){
+      b.onclick=function(){
+        state.sales.forEach(function(s){if(s.id===b.getAttribute('data-dv'))s.delivery='Delivered';});
+        save();render();toast('Marked as delivered');
+      };
+    });
+  }
+  function render(){renderDash();renderLists();renderDeliveries();renderDebts();checkBackup();}
+
+  // payment modal
+  function openPay(k){
+    var d=groupDebts()[k]; if(!d)return;
+    payTarget=k; $('pmName').textContent=d.name; $('pmBal').textContent=naira(d.owed); $('pmAmt').value='';
+    $('payModal').hidden=false; setTimeout(function(){$('pmAmt').focus();},50);
+  }
+  function closePay(){$('payModal').hidden=true;payTarget=null;}
+  $('pmCancel').onclick=closePay;
+  $('payModal').onclick=function(e){if(e.target===this)closePay();};
+  $('pmFull').onclick=function(){var d=groupDebts()[payTarget];if(d)$('pmAmt').value=d.owed;};
+  $('pmHalf').onclick=function(){var d=groupDebts()[payTarget];if(d)$('pmAmt').value=Math.round(d.owed/2*100)/100;};
+  $('pmSave').onclick=function(){
+    var d=groupDebts()[payTarget], amt=parseFloat($('pmAmt').value);
+    if(!d||!(amt>0)){toast('Enter an amount');return;}
+    if(amt>d.owed+0.001){toast('That is more than they owe');return;}
+    var left=amt, method=$('pmMethod').value;
+    d.sales.sort(function(a,b){return a.date<b.date?-1:1;}).forEach(function(s){
+      if(left<=0)return; var take=Math.min(left,bal(s));
+      if(take>0){s.payments.push({id:uid(),date:today(),amt:take,method:method});left-=take;}
+    });
+    save();closePay();render();toast('Payment saved');
+  };
+
+  // forms
+  function setDefaults(){$('fDate').value=today();$('eDate').value=today();}
+  $('fPayment').onchange=function(){var c=this.value==='Credit (Owe)';$('depositLabel').hidden=!c;if(!c)$('fDeposit').value='';};
+
+  $('saleForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    var product=$('fProduct').value.trim(), qty=parseFloat($('fQty').value), price=parseFloat($('fPrice').value);
+    var pay=$('fPayment').value, cust=$('fCustomer').value.trim(), costRaw=$('fCost').value;
+    var fee=parseFloat($('fFee').value)||0, phone=$('fPhone').value.trim(), status=$('fStatus').value;
+    var cost=costRaw===''?null:parseFloat(costRaw), date=$('fDate').value||today();
+    if(!product||!(qty>0)||isNaN(price)||price<0){toast('Fill in item, quantity and price');return;}
+    if(pay==='Credit (Owe)'&&!cust){toast('Enter the customer name for credit sales');$('fCustomer').focus();return;}
+    var total=Math.round((qty*price+fee)*100)/100, payments=[];
+    if(phone&&!waNum(phone)){toast('Phone number does not look right');$('fPhone').focus();return;}
+    if(pay==='Credit (Owe)'){
+      var dep=parseFloat($('fDeposit').value)||0;
+      if(dep>total){toast('Deposit is more than the total');return;}
+      if(dep>0)payments.push({id:uid(),date:date,amt:dep,method:'Cash'});
+    }else{
+      payments.push({id:uid(),date:date,amt:total,method:pay});
+    }
+    state.sales.push({id:uid(),date:date,product:product,qty:qty,price:price,cost:(cost!=null&&!isNaN(cost))?cost:null,payment:pay,customer:cust,total:total,fee:fee,delivery:status,payments:payments});
+    if(cust&&phone)state.phones[cust.toLowerCase()]=phone;
+    save();
+    this.reset(); $('fQty').value=1; $('depositLabel').hidden=true; setDefaults();
+    render(); toast('Sale added: '+naira(total));
+    $('fProduct').focus();
+  });
+
+  $('expenseForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    var desc=$('eDesc').value.trim(), amt=parseFloat($('eAmount').value);
+    if(!desc||!(amt>0)){toast('Fill in description and amount');return;}
+    state.expenses.push({id:uid(),date:$('eDate').value||today(),desc:desc,amount:amt});
+    save(); this.reset(); setDefaults(); render(); toast('Expense added');
+  });
+
+  // backup / restore
+  function doBackup(){
+    var blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+    var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='sales-book-backup-'+today()+'.json';
+    document.body.appendChild(a); a.click(); setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},500);
+    try{localStorage.setItem(BK,String(Date.now()));}catch(e){}
+    $('backupBanner').hidden=true; toast('Backup saved');
+  }
+  function checkBackup(){
+    var has=state.sales.length||state.expenses.length, last=0;
+    try{last=parseInt(localStorage.getItem(BK)||'0',10);}catch(e){}
+    var old=!last||(Date.now()-last)>7*864e5;
+    $('backupBanner').hidden=!(has&&old);
+    $('backupMsg').textContent=last?'It has been over a week since your last backup.':'You have not saved a backup yet.';
+  }
+  $('btnBigBackup').onclick=doBackup; $('bannerBackup').onclick=doBackup;
+  $('btnBigRestore').onclick=function(){
+    var inp=document.createElement('input'); inp.type='file'; inp.accept='.json,application/json';
+    inp.onchange=function(){
+      var f=inp.files[0]; if(!f)return; var r=new FileReader();
+      r.onload=function(){
+        try{
+          var d=JSON.parse(r.result);
+          if(!d||!Array.isArray(d.sales))throw 0;
+          if(!confirm('This will replace your current records with the backup. Continue?'))return;
+          state.sales=d.sales; state.expenses=d.expenses||[]; state.phones=d.phones||{}; save(); render(); toast('Data restored');
+        }catch(e){toast('That file is not a valid backup');}
+      };
+      r.readAsText(f);
+    };
+    inp.click();
+  };
+  $('btnClear').onclick=function(){
+    if(!confirm('Delete ALL sales and expenses? This cannot be undone.'))return;
+    if(!confirm('Are you sure? Save a backup first if unsure.'))return;
+    state={sales:[],expenses:[],phones:{}}; save(); render(); toast('All data cleared');
+  };
+
+  // install
+  var deferred=null;
+  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferred=e;$('btnInstall').hidden=false;});
+  $('btnInstall').onclick=function(){if(!deferred)return;deferred.prompt();deferred=null;$('btnInstall').hidden=true;};
+  $('installDismiss').onclick=function(){$('installBanner').hidden=true;};
+
+  // keep number boxes clean (text inputs avoid keyboard/scroll jumping on Android)
+  document.querySelectorAll('input[inputmode]').forEach(function(el){
+    el.addEventListener('input',function(){
+      var v=el.value, dec=el.getAttribute('inputmode')==='decimal';
+      v=v.replace(dec?/[^0-9.]/g:/[^0-9]/g,'');
+      if(dec){var i=v.indexOf('.'); if(i>-1)v=v.slice(0,i+1)+v.slice(i+1).replace(/\./g,'');}
+      if(v!==el.value)el.value=v;
+    });
+  });
+
+  document.querySelectorAll('input,select').forEach(function(el){
+    el.addEventListener('focus',function(){
+      setTimeout(function(){try{el.scrollIntoView({block:'center'});}catch(e){}},350);
+    });
+  });
+  $('fCustomer').addEventListener('input',function(){
+    var ph=state.phones[this.value.trim().toLowerCase()];
+    if(ph&&!$('fPhone').value)$('fPhone').value=ph;
+  });
+
+  load(); setDefaults(); render();
+})();
+</script>
+</body>
+</html>
