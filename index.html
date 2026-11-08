@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <title>My Sales Book</title>
 <meta name="theme-color" content="#047857">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -259,6 +261,45 @@
   .hs-col.today .hs-bar{background:#fff}
   .hs-lbl{font-size:10.5px;margin-top:5px;opacity:.85;font-weight:600}
   .hs-col.today .hs-lbl{opacity:1;font-weight:800}
+
+  /* stock */
+  .stock-hint{font-size:12px;font-weight:600;text-transform:none;letter-spacing:0;margin-top:5px}
+  .stock-hint.ok{color:#047857}.stock-hint.low{color:#b45309}.stock-hint.out{color:#b91c1c}
+  .stock-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-top:1px solid #eef1f5}
+  .stock-row:first-child{border-top:0}
+  .stock-name{flex:1;min-width:0;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .stock-qty{font-weight:800;font-size:16px;min-width:56px;text-align:right}
+  .stock-qty small{display:block;font-size:10.5px;font-weight:700}
+  .stock-qty.ok{color:#047857}.stock-qty.low{color:#b45309}.stock-qty.out{color:#b91c1c}
+  .stock-add{display:grid;grid-template-columns:1fr 84px 84px;gap:8px;margin-top:12px;padding-top:12px;border-top:1px dashed #d8dee8}
+  .stock-add input{min-width:0}
+  .stock-add button{grid-column:1/-1}
+  .stock-add-lbl{font-size:10.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.04em}
+  .stock-add .naira-input{grid-column:1/-1}
+  .stock-add .naira-input input{padding-left:30px}
+  .stock-cost{display:block;font-size:11px;font-weight:500;color:#64748b}
+  .backup-box{border-left:4px solid #3b82f6}
+  .backup-box summary{cursor:pointer;font-weight:800;font-size:15px;display:flex;justify-content:space-between;align-items:center;list-style:none}
+  .backup-box summary::-webkit-details-marker{display:none}
+  .backup-box summary .muted{font-weight:500;font-size:12px}
+
+  /* tabs, nav, sheets */
+  body{padding-bottom:calc(120px + env(safe-area-inset-bottom))}
+  .bnav{position:fixed;left:0;right:0;bottom:0;z-index:40;background:#fff;border-top:1px solid #e2e8f0;display:flex;padding:4px 4px calc(4px + env(safe-area-inset-bottom))}
+  .bnav button{flex:1;background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:1px;font:inherit;font-size:11px;font-weight:700;color:#64748b;padding:6px 0;cursor:pointer}
+  .bnav .ic{font-size:20px;line-height:1.1}
+  .bnav button.on{color:#059669}
+  .fab{position:fixed;right:16px;bottom:calc(74px + env(safe-area-inset-bottom));z-index:41;width:58px;height:58px;border-radius:50%;border:0;background:linear-gradient(180deg,#10b981,#059669);color:#fff;font-size:34px;line-height:1;box-shadow:0 8px 20px rgba(5,150,105,.45);cursor:pointer}
+  .sheet-overlay{position:fixed;inset:0;z-index:60;background:rgba(15,23,42,.45);display:flex;align-items:flex-end;justify-content:center}
+  .sheet-overlay[hidden]{display:none}
+  .sheet{background:#fff;width:100%;max-width:560px;max-height:92%;overflow-y:auto;border-radius:18px 18px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom));-webkit-overflow-scrolling:touch}
+  .sheet-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .sheet-head h2{font-size:18px;margin:0}
+  .searchbox{width:100%;padding:10px 12px;border:1px solid #cbd5e1;border-radius:10px;font-size:16px;margin-bottom:10px;background:#fff}
+  .rep-row{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:6px;padding:9px 0;border-top:1px solid #eef1f5;font-size:14px}
+  .rep-row span:nth-child(n+2){text-align:right}
+  .rep-h{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;border-top:0}
+  .rep-note{font-size:13px;color:#475569;margin-top:10px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -277,9 +318,13 @@
   </div>
   <div class="top-actions">
     <button class="icon-btn pulse" id="btnInstall" title="Install app" hidden>📲</button>
-    <button class="icon-btn danger" id="btnClear" title="Clear all data">✕</button>
   </div>
 </header>
+
+<div class="banner" id="lowBanner" hidden style="border-color:#fecaca;background:#fef2f2;color:#991b1b">
+  <span class="b-txt" id="lowMsg"></span>
+  <button class="btn-sm" id="lowGo">View stock</button>
+</div>
 
 <div class="banner" id="backupBanner" hidden>
   <span class="b-txt" id="backupMsg"></span>
@@ -291,6 +336,33 @@
   <button class="btn-sm" id="installDismiss">Got it</button>
 </div>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<main>
+<div class="tab" id="tab-home">
 <section class="hero">
   <div class="hero-head">
     <span class="hero-label">Today's Sales</span>
@@ -328,15 +400,123 @@
   </div>
 </section>
 
+<section class="card" id="delCard" style="border-left:4px solid #3b82f6" hidden>
+  <div class="card-head"><h2>Orders to Deliver</h2><span class="muted" id="delCount"></span></div>
+  <div id="delList"></div>
+</section>
+</div>
+
+<div class="tab" id="tab-sales" hidden>
 <section class="card">
-  <div class="card-head">
-    <h2>Record a Sale</h2>
-    <span class="muted">Fill and tap Add Sale</span>
+  <div class="card-head"><h2>Sales</h2><span class="muted" id="salesCount"></span></div>
+  <input type="text" class="searchbox" id="salesQ" placeholder="Search item or customer">
+  <div class="table-wrap">
+    <table class="tbl">
+      <thead><tr><th>Date</th><th>Item</th><th class="num">Qty</th><th class="num">Total</th><th>Payment</th><th>Customer</th><th class="num">Owing</th><th></th></tr></thead>
+      <tbody id="salesBody"></tbody>
+    </table>
   </div>
-  <form class="sale-form" id="saleForm" autocomplete="off">
+  <button type="button" class="btn-sm" id="salesMore" hidden style="margin-top:10px;width:100%">Show all</button>
+  <div class="empty-box" id="salesEmpty"><span class="big">🧾</span>No sales yet. Tap the green + to record your first sale.</div>
+</section>
+
+<section class="card" id="expCard" >
+  <div class="card-head"><h2>Expenses</h2><button type="button" class="btn-sm btn-paid" id="btnAddExp">+ Add expense</button></div>
+  <div class="muted" id="expTotal" style="margin-bottom:8px"></div>
+  <div class="table-wrap">
+    <table class="tbl" style="min-width:420px">
+      <thead><tr><th>Date</th><th>Description</th><th class="num">Amount</th><th></th></tr></thead>
+      <tbody id="expBody"></tbody>
+    </table>
+  </div>
+  <button type="button" class="btn-sm" id="expMore" hidden style="margin-top:10px;width:100%">Show all</button>
+</section>
+</div>
+
+<div class="tab" id="tab-stock" hidden>
+<section class="card" id="stockCard">
+  <div class="card-head"><h2>My Stock</h2><span class="muted" id="stockCount"></span></div>
+  <div id="stockList"></div>
+  <div class="empty-box" id="stockEmpty" style="padding:14px 0"><span class="big">📦</span>No stock added yet. Add a product below and each sale will reduce it.</div>
+  <div class="stock-add">
+    <div style="grid-column:1/-1" class="stock-add-lbl">Add a product to stock</div>
+    <input type="text" id="sName" list="saleProdList" placeholder="Product name">
+    <input type="text" id="sQty" inputmode="numeric" placeholder="Units">
+    <input type="text" id="sLow" inputmode="numeric" placeholder="Low at">
+    <span class="naira-input"><span class="naira">₦</span><input type="text" id="sCost" inputmode="decimal" placeholder="Cost per unit (what you paid)"></span>
+    <button type="button" class="btn-primary" id="sAdd">+ Add to stock</button>
+  </div>
+</section>
+</div>
+
+<div class="tab" id="tab-people" hidden>
+<section class="card" id="debtCard" style="border-left:4px solid #f59e0b" hidden>
+  <div class="card-head"><h2>Who Owes You</h2><span class="muted">Tap to remind or record payment</span></div>
+  <div id="debtList"></div>
+</section>
+
+<section class="card">
+  <div class="card-head"><h2>Customers</h2><span class="muted" id="custCount"></span></div>
+  <input type="text" class="searchbox" id="custQ" placeholder="Search customers">
+  <div id="custRows"></div>
+  <div class="empty-box" id="custEmpty"><span class="big">👥</span>Customers appear here once you record a sale with a name.</div>
+</section>
+</div>
+
+<div class="tab" id="tab-more" hidden>
+<section class="card">
+  <div class="card-head"><h2>Reports</h2><span class="muted">This month so far</span></div>
+  <div id="reportBody"></div>
+</section>
+
+<section class="card">
+  <div class="card-head"><h2>How You Got Paid</h2><span class="muted">Last 30 days</span></div>
+  <div id="payBars"></div>
+</section>
+
+<section class="card">
+  <div class="card-head"><h2>My Business</h2><span class="muted">Shows on receipts</span></div>
+  <input type="text" class="searchbox" id="bizName" placeholder="Business name, e.g. Ada's Hair" style="margin:0">
+</section>
+
+<details class="card backup-box" open id="backupBox">
+  <summary>🛡️ Backup &amp; restore <span class="muted">Tap to open</span></summary>
+  <p class="muted" style="margin:10px 0 12px;line-height:1.5">
+    Your records are saved inside this phone. If you change phones, clear your browser history, or lose this phone, you lose them. <b>Save a backup file every week.</b>
+  </p>
+  <div style="display:flex;gap:10px">
+    <button type="button" class="btn-primary" id="btnBigBackup" style="flex:1;background:linear-gradient(180deg,#3b82f6,#2563eb);border:none;color:#fff;padding:11px;border-radius:10px;font-weight:700;font-size:14px">📥 Save Backup</button>
+    <button type="button" class="btn-primary" id="btnBigRestore" style="flex:1;background:#fff;border:1px solid #cbd5e1;color:#334155;padding:11px;border-radius:10px;font-weight:700;font-size:14px">📤 Restore</button>
+  </div>
+</details>
+
+<section class="card" style="border-color:#fecaca">
+  <button type="button" class="btn-sm" id="btnClear" style="width:100%;color:#b91c1c;border-color:#fecaca">Clear all data</button>
+</section>
+
+<footer>My Sales Book · Your records stay on this phone.<br>Back up weekly.</footer>
+</div>
+</main>
+
+<button type="button" class="fab" id="fab" title="Record a sale">+</button>
+
+<nav class="bnav">
+  <button data-tab="home" class="on"><span class="ic">🏠</span>Home</button>
+  <button data-tab="sales"><span class="ic">🧾</span>Sales</button>
+  <button data-tab="stock"><span class="ic">📦</span>Stock</button>
+  <button data-tab="people"><span class="ic">👥</span>Customers</button>
+  <button data-tab="more"><span class="ic">⚙️</span>More</button>
+</nav>
+
+<div class="sheet-overlay" id="saleSheet" hidden>
+  <div class="sheet">
+    <div class="sheet-head"><h2>Record a Sale</h2><button type="button" class="icon-btn" data-close>✕</button></div>
+    <form class="sale-form" id="saleForm" autocomplete="off">
     <label class="full">Product / Item
       <input type="text" id="fProduct" list="prodList" placeholder="e.g. Bag of rice" required>
       <datalist id="prodList"></datalist>
+      <datalist id="saleProdList"></datalist>
+      <div class="stock-hint" id="stockHint"></div>
     </label>
     <label>Qty
       <input type="text" id="fQty" inputmode="numeric" min="1" step="1" value="1" required>
@@ -349,9 +529,6 @@
         <option value="Cash">Cash</option>
         <option value="Bank Transfer">Bank Transfer</option>
         <option value="POS">POS</option>
-        <option value="Opay">Opay</option>
-        <option value="Moniepoint">Moniepoint</option>
-        <option value="PalmPay">PalmPay</option>
         <option value="Credit (Owe)">Credit (Owe)</option>
       </select>
     </label>
@@ -371,6 +548,9 @@
     <label>Delivery fee
       <span class="naira-input"><span class="naira">₦</span><input type="text" id="fFee" inputmode="decimal" placeholder="Optional"></span>
     </label>
+    <label>Discount
+      <span class="naira-input"><span class="naira">₦</span><input type="text" id="fDisc" inputmode="decimal" placeholder="Optional"></span>
+    </label>
     <label>Order status
       <select id="fStatus">
         <option value="Delivered">Delivered</option>
@@ -382,15 +562,14 @@
     </label>
     <button type="submit" class="btn-primary full">+ Add Sale</button>
   </form>
-  <div class="quick-picks" id="quickPicks"></div>
-</section>
-
-<section class="card">
-  <div class="card-head">
-    <h2>Record an Expense</h2>
-    <span class="muted">Transport, data, rent, etc.</span>
+    <div class="quick-picks" id="quickPicks"></div>
   </div>
-  <form class="sale-form" id="expenseForm" autocomplete="off">
+</div>
+
+<div class="sheet-overlay" id="expSheet" hidden>
+  <div class="sheet">
+    <div class="sheet-head"><h2>Record an Expense</h2><button type="button" class="icon-btn" data-close>✕</button></div>
+    <form class="sale-form" id="expenseForm" autocomplete="off">
     <label class="full">Description
       <input type="text" id="eDesc" placeholder="e.g. Bike transport to market" required>
     </label>
@@ -402,60 +581,8 @@
     </label>
     <button type="submit" class="btn-primary btn-expense full">- Add Expense</button>
   </form>
-</section>
-
-<!-- PROTECT YOUR DATA SECTION -->
-<section class="card" style="border-left: 4px solid #3b82f6;">
-  <div class="card-head">
-    <h2>🛡️ Protect Your Data</h2>
-    <span class="muted">Save a copy</span>
   </div>
-  <p class="muted" style="margin-bottom: 14px; line-height: 1.5;">
-    Your records are saved inside this phone. If you change phones, clear your browser history, or lose this phone, you will lose your records. <b>Please save a backup file every week.</b>
-  </p>
-  <div style="display: flex; flex-direction: column; gap: 10px;">
-    <button type="button" class="btn-primary" id="btnBigBackup" style="width: 100%; background: linear-gradient(180deg,#3b82f6,#2563eb); border: none; color: white; padding: 14px; border-radius: 10px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 12px rgba(59,130,246,0.3);">📥 Save Backup</button>
-    <button type="button" class="btn-primary" id="btnBigRestore" style="width: 100%; background: #ffffff; border: 1px solid #cbd5e1; color: #334155; padding: 14px; border-radius: 10px; font-weight: bold; font-size: 16px;">📤 Restore Data</button>
-  </div>
-</section>
-
-<section class="card">
-  <div class="card-head"><h2>How You Got Paid</h2><span class="muted">Last 30 days</span></div>
-  <div id="payBars"></div>
-</section>
-
-<section class="card" id="delCard" style="border-left:4px solid #3b82f6" hidden>
-  <div class="card-head"><h2>Orders to Deliver</h2><span class="muted" id="delCount"></span></div>
-  <div id="delList"></div>
-</section>
-
-<section class="card" id="debtCard" style="border-left:4px solid #f59e0b" hidden>
-  <div class="card-head"><h2>Who Owes You</h2><span class="muted">Tap to remind or record payment</span></div>
-  <div id="debtList"></div>
-</section>
-
-<section class="card">
-  <div class="card-head"><h2>Recent Sales</h2><span class="muted" id="salesCount"></span></div>
-  <div class="table-wrap">
-    <table class="tbl">
-      <thead><tr><th>Date</th><th>Item</th><th class="num">Qty</th><th class="num">Total</th><th>Payment</th><th>Customer</th><th class="num">Owing</th><th></th></tr></thead>
-      <tbody id="salesBody"></tbody>
-    </table>
-  </div>
-  <div class="empty-box" id="salesEmpty"><span class="big">🧾</span>No sales yet. Fill the form above and tap Add Sale.</div>
-</section>
-
-<section class="card" id="expCard" hidden>
-  <div class="card-head"><h2>Recent Expenses</h2><span class="muted" id="expTotal"></span></div>
-  <div class="table-wrap">
-    <table class="tbl" style="min-width:420px">
-      <thead><tr><th>Date</th><th>Description</th><th class="num">Amount</th><th></th></tr></thead>
-      <tbody id="expBody"></tbody>
-    </table>
-  </div>
-</section>
-
-<footer>My Sales Book · Your records stay on this phone.<br>Back up weekly.</footer>
+</div>
 
 <div class="modal-overlay" id="payModal" hidden>
   <div class="modal">
@@ -468,7 +595,7 @@
     <div class="quick-amounts"><button type="button" id="pmFull">Pay full balance</button><button type="button" id="pmHalf">Half</button></div>
     <label>Paid with
       <select id="pmMethod">
-        <option>Cash</option><option>Bank Transfer</option><option>POS</option><option>Opay</option><option>Moniepoint</option><option>PalmPay</option>
+        <option>Cash</option><option>Bank Transfer</option><option>POS</option>
       </select>
     </label>
     <div class="modal-actions">
@@ -483,11 +610,11 @@
 <script>
 (function(){
   var KEY='salesbook_v1', BK='salesbook_lastbackup';
-  var state={sales:[],expenses:[],phones:{}};
-  var payTarget=null, openHist={};
+  var state={sales:[],expenses:[],phones:{},stock:{},settings:{}};
+  var payTarget=null, openHist={}, expAll=false, salesAll=false, salesQ='';
 
   function load(){
-    try{var r=localStorage.getItem(KEY); if(r){var d=JSON.parse(r); state.sales=d.sales||[]; state.expenses=d.expenses||[]; state.phones=d.phones||{};}}catch(e){}
+    try{var r=localStorage.getItem(KEY); if(r){var d=JSON.parse(r); state.sales=d.sales||[]; state.expenses=d.expenses||[]; state.phones=d.phones||{}; state.stock=d.stock||{}; state.settings=d.settings||{};}}catch(e){}
   }
   function save(){
     try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){toast('Could not save. Storage may be full or blocked.');}
@@ -514,12 +641,14 @@
   function openWA(phone,text){window.open('https://wa.me/'+waNum(phone)+'?text='+encodeURIComponent(text),'_blank');}
   function receiptText(s){
     var lines=['🧾 *RECEIPT*','Date: '+fmtDate(s.date)];
+    if(state.settings.bizName)lines.unshift('*'+state.settings.bizName+'*');
     if(s.customer)lines.push('Customer: '+s.customer);
     lines.push('',s.qty+' × '+s.product+' @ '+naira(s.price)+' = '+naira(s.qty*s.price));
     if(s.fee)lines.push('Delivery: '+naira(s.fee));
+    if(s.disc)lines.push('Discount: -'+naira(s.disc));
     lines.push('*Total: '+naira(s.total)+'*','Paid: '+naira(paid(s)));
     if(bal(s)>0)lines.push('*Balance owing: '+naira(bal(s))+'*');
-    lines.push('Payment: '+s.payment,'Status: '+(s.delivery==='Pending'?'Pending delivery':'Delivered'),'','Thank you for your patronage 🙏');
+    lines.push('Payment: '+pm(s.payment),'Status: '+(s.delivery==='Pending'?'Pending delivery':'Delivered'),'','Thank you for your patronage 🙏','','_Made with My Sales Book_');
     return lines.join('\n');
   }
   function sendReceipt(id){
@@ -528,14 +657,16 @@
   }
   function paid(s){return s.payments.reduce(function(a,p){return a+p.amt;},0);}
   function bal(s){return Math.max(0,Math.round((s.total-paid(s))*100)/100);}
+  function pm(m){return (m==='Opay'||m==='Moniepoint'||m==='PalmPay')?'Bank Transfer':m;}
   function badgeClass(m){
+    m=pm(m);
     if(m==='Cash')return 'b-cash'; if(m==='Bank Transfer')return 'b-transfer'; if(m==='POS')return 'b-pos';
-    if(m==='Opay')return 'b-opay'; if(m==='Moniepoint')return 'b-moniepoint'; if(m==='PalmPay')return 'b-palmpay'; return 'b-credit';
+    return 'b-credit';
   }
   function sumSales(from,to){
     var t=0,c=0,p=0;
     state.sales.forEach(function(s){
-      if(s.date>=from&&s.date<=to){t+=s.total;c++; if(s.cost!=null)p+=(s.price-s.cost)*s.qty;}
+      if(s.date>=from&&s.date<=to){t+=s.total;c++; if(s.cost!=null)p+=(s.price-s.cost)*s.qty-(s.disc||0);}
     });
     return {total:t,count:c,profit:p};
   }
@@ -583,49 +714,61 @@
     }).join('')+'</div>';
     // payment methods (money actually received in last 30 days by sale date)
     var by={},from=daysAgo(29);
-    state.sales.forEach(function(s){if(s.date>=from&&s.date<=td){by[s.payment]=(by[s.payment]||0)+s.total;}});
+    state.sales.forEach(function(s){if(s.date>=from&&s.date<=td){by[pm(s.payment)]=(by[pm(s.payment)]||0)+s.total;}});
     var keys=Object.keys(by).sort(function(a,b){return by[b]-by[a];}), tot=keys.reduce(function(a,k){return a+by[k];},0);
-    var colors={'Cash':'#10b981','Bank Transfer':'#3b82f6','POS':'#8b5cf6','Opay':'#f97316','Moniepoint':'#ef4444','PalmPay':'#06b6d4','Credit (Owe)':'#f59e0b'};
+    var colors={'Cash':'#10b981','Bank Transfer':'#3b82f6','POS':'#8b5cf6','Credit (Owe)':'#f59e0b'};
     $('payBars').innerHTML=keys.length?keys.map(function(k){
       return '<div class="hbar"><div class="hbar-top"><span>'+esc(k)+'</span><span class="val">'+naira(by[k])+'</span></div><div class="hbar-track"><div class="hbar-fill" style="width:'+(by[k]/tot*100)+'%;background:'+colors[k]+'"></div></div></div>';
     }).join(''):'<div class="empty-box">No sales in the last 30 days.</div>';
   }
 
   function renderLists(){
-    // datalists + quick picks
+    // suggestions in the sale form come from My Stock only
     var prods={},custs={};
     state.sales.slice().sort(function(a,b){return a.date<b.date?1:-1;}).forEach(function(s){
-      if(!prods[s.product])prods[s.product]={price:s.price,cost:s.cost,n:0}; prods[s.product].n++;
+      var k=skey(s.product); if(!prods[k])prods[k]={name:s.product,price:s.price,cost:s.cost,n:0}; prods[k].n++;
       if(s.customer)custs[s.customer]=1;
     });
-    $('prodList').innerHTML=Object.keys(prods).map(function(p){return '<option value="'+esc(p)+'">';}).join('');
+    var sk=Object.keys(state.stock);
+    $('prodList').innerHTML=sk.map(function(k){return '<option value="'+esc(state.stock[k].name)+'">';}).join('');
+    $('saleProdList').innerHTML=Object.keys(prods).map(function(k){return '<option value="'+esc(prods[k].name)+'">';}).join('');
     $('custList').innerHTML=Object.keys(custs).map(function(c){return '<option value="'+esc(c)+'">';}).join('');
-    var top=Object.keys(prods).sort(function(a,b){return prods[b].n-prods[a].n;}).slice(0,6);
-    $('quickPicks').innerHTML=top.length?'<span class="qp-label">Quick:</span>'+top.map(function(p){
-      return '<button type="button" class="qp-chip" data-p="'+esc(p)+'">'+esc(p)+'</button>';}).join(''):'';
+    var top=sk.sort(function(a,b){return (prods[b]?prods[b].n:0)-(prods[a]?prods[a].n:0);}).slice(0,6);
+    $('quickPicks').innerHTML=top.length?'<span class="qp-label">Quick:</span>'+top.map(function(k){
+      return '<button type="button" class="qp-chip" data-p="'+esc(k)+'">'+esc(state.stock[k].name)+'</button>';}).join(''):'';
     $('quickPicks').querySelectorAll('.qp-chip').forEach(function(b){
-      b.onclick=function(){var p=prods[b.getAttribute('data-p')];$('fProduct').value=b.getAttribute('data-p');$('fPrice').value=p.price;$('fCost').value=p.cost==null?'':p.cost;$('fQty').focus();};
+      b.onclick=function(){
+        var k=b.getAttribute('data-p'), st=state.stock[k], p=prods[k];
+        $('fProduct').value=st.name;
+        $('fPrice').value=p?p.price:'';
+        $('fCost').value=st.cost!=null?st.cost:(p&&p.cost!=null?p.cost:'');
+        updateStockHint(); $('fQty').focus();
+      };
     });
 
     // sales table
-    var rows=state.sales.slice().sort(function(a,b){return a.date===b.date?(a.id<b.id?1:-1):(a.date<b.date?1:-1);}).slice(0,50);
+    var allRows=state.sales.slice().sort(function(a,b){return a.date===b.date?(a.id<b.id?1:-1):(a.date<b.date?1:-1);}), q=salesQ.trim().toLowerCase();
+    if(q)allRows=allRows.filter(function(s){return (s.product+' '+(s.customer||'')).toLowerCase().indexOf(q)>-1;});
+    var rows=(salesAll||q)?allRows:allRows.slice(0,5);
+    $('salesMore').hidden=q||allRows.length<=5; $('salesMore').textContent=salesAll?'Show less':'Show all ('+allRows.length+')';
     $('salesCount').textContent=state.sales.length+(state.sales.length===1?' sale':' sales')+' total';
     $('salesEmpty').hidden=state.sales.length>0;
     $('salesBody').innerHTML=rows.map(function(s){
       var b=bal(s);
       return '<tr><td>'+fmtDate(s.date)+'</td><td>'+esc(s.product)+(s.delivery==='Pending'?' <span class="badge b-partial">Pending</span>':'')+'</td><td class="num">'+s.qty+'</td><td class="num">'+naira(s.total)+
-        '</td><td><span class="badge '+badgeClass(s.payment)+'">'+esc(s.payment)+'</span></td><td>'+esc(s.customer||'—')+
+        '</td><td><span class="badge '+badgeClass(s.payment)+'">'+esc(pm(s.payment))+'</span></td><td>'+esc(s.customer||'—')+
         '</td><td class="num '+(b>0?'bal-red':'bal-ok')+'">'+(b>0?naira(b):'—')+'</td><td style="white-space:nowrap"><button class="del-btn" data-rc="'+s.id+'" title="Send receipt">🧾</button><button class="del-btn" data-del="'+s.id+'" title="Delete">×</button></td></tr>';
     }).join('');
     $('salesBody').querySelectorAll('[data-del]').forEach(function(b){
-      b.onclick=function(){if(confirm('Delete this sale?')){state.sales=state.sales.filter(function(s){return s.id!==b.getAttribute('data-del');});save();render();toast('Sale deleted');}};
+      b.onclick=function(){if(confirm('Delete this sale?')){state.sales.forEach(function(s){if(s.id===b.getAttribute('data-del')&&s.stockKey&&state.stock[s.stockKey])state.stock[s.stockKey].qty+=s.stockUsed||0;});state.sales=state.sales.filter(function(s){return s.id!==b.getAttribute('data-del');});save();render();toast('Sale deleted');}};
     });
 
     $('salesBody').querySelectorAll('[data-rc]').forEach(function(b){b.onclick=function(){sendReceipt(b.getAttribute('data-rc'));};});
 
     // expenses
-    var ex=state.expenses.slice().sort(function(a,b){return a.date<b.date?1:-1;}).slice(0,20);
-    $('expCard').hidden=!state.expenses.length;
+    var exAll=state.expenses.slice().sort(function(a,b){return a.date<b.date?1:-1;}), ex=expAll?exAll.slice(0,50):exAll.slice(0,3);
+    $('expMore').hidden=exAll.length<=3; $('expMore').textContent=expAll?'Show less':'Show all ('+exAll.length+')';
+    $('expCard').hidden=false; $('expBody').closest('.table-wrap').style.display=state.expenses.length?'':'none';
     $('expTotal').textContent='Last 30 days: '+naira(sumExp(daysAgo(29),today()));
     $('expBody').innerHTML=ex.map(function(e){
       return '<tr><td>'+fmtDate(e.date)+'</td><td>'+esc(e.desc)+'</td><td class="num">'+naira(e.amount)+'</td><td><button class="del-btn" data-xdel="'+e.id+'" title="Delete">×</button></td></tr>';
@@ -683,6 +826,71 @@
     });
   }
 
+  function skey(n){return String(n||'').trim().toLowerCase();}
+  function stockState(st){return st.qty<=0?'out':(st.qty<=st.low?'low':'ok');}
+  function avgCost(st,addQty,newCost){
+    if(newCost==null)return st.cost==null?null:st.cost;
+    if(st.cost==null||st.qty<=0)return newCost;
+    return Math.round(((st.qty*st.cost+addQty*newCost)/(st.qty+addQty))*100)/100;
+  }
+  function fillFromProduct(){
+    var name=$('fProduct').value.trim(); if(!name)return;
+    var k=skey(name), st=state.stock[k], last=null;
+    state.sales.forEach(function(s){if(skey(s.product)===k&&(!last||s.date>=last.date))last=s;});
+    if(!$('fPrice').value&&last)$('fPrice').value=last.price;
+    if(!$('fCost').value){
+      if(st&&st.cost!=null)$('fCost').value=st.cost;
+      else if(last&&last.cost!=null)$('fCost').value=last.cost;
+    }
+  }
+  function updateStockHint(){
+    var st=state.stock[skey($('fProduct').value)], el=$('stockHint');
+    if(!st){el.textContent='';el.className='stock-hint';return;}
+    var s=stockState(st);
+    el.className='stock-hint '+s;
+    el.textContent=s==='out'?'Out of stock':(st.qty+' in stock'+(s==='low'?' (running low)':''));
+  }
+  function renderStock(){
+    var keys=Object.keys(state.stock).sort(function(a,b){return state.stock[a].qty-state.stock[b].qty;});
+    $('stockEmpty').hidden=keys.length>0;
+    var low=keys.filter(function(k){return stockState(state.stock[k])!=='ok';});
+    var worth=keys.reduce(function(a,k){var s=state.stock[k];return a+(s.cost!=null?s.qty*s.cost:0);},0);
+    $('stockCount').textContent=keys.length?keys.length+(keys.length===1?' product':' products')+(worth>0?' · Worth '+naira(worth):''):'';
+    $('stockList').innerHTML=keys.map(function(k){
+      var st=state.stock[k], s=stockState(st);
+      return '<div class="stock-row"><div class="stock-name">'+esc(st.name)+(st.cost!=null?'<span class="stock-cost">Cost '+naira(st.cost)+' each</span>':'')+'</div>'+
+        '<div class="stock-qty '+s+'">'+st.qty+'<small>'+(s==='out'?'OUT':(s==='low'?'LOW':'left'))+'</small></div>'+
+        '<button class="btn-sm btn-paid" data-rs="'+esc(k)+'">+ Restock</button>'+
+        '<button class="del-btn" data-se="'+esc(k)+'" title="Correct the count">✎</button>'+
+        '<button class="del-btn" data-sd="'+esc(k)+'" title="Stop tracking">×</button></div>';
+    }).join('');
+    $('stockList').querySelectorAll('[data-rs]').forEach(function(b){
+      b.onclick=function(){
+        var k=b.getAttribute('data-rs'), n=parseInt(prompt('How many units did you add to '+state.stock[k].name+'?'),10);
+        if(!(n>0))return;
+        var st=state.stock[k], cur=st.cost!=null?' Leave empty to keep '+naira(st.cost)+'.':'';
+        var c=parseFloat(prompt('Cost per unit for these new ones?'+cur));
+        if(!isNaN(c)&&c>=0)st.cost=avgCost(st,n,c);
+        st.qty+=n; save(); render(); toast(n+' units added'+(st.cost!=null?' · avg cost '+naira(st.cost):''));
+      };
+    });
+    $('stockList').querySelectorAll('[data-se]').forEach(function(b){
+      b.onclick=function(){
+        var k=b.getAttribute('data-se'), n=prompt('Correct units left for '+state.stock[k].name+':',state.stock[k].qty);
+        if(n===null||n.trim()===''||isNaN(parseInt(n,10))||parseInt(n,10)<0)return;
+        state.stock[k].qty=parseInt(n,10); save(); render();
+      };
+    });
+    $('stockList').querySelectorAll('[data-sd]').forEach(function(b){
+      b.onclick=function(){
+        var k=b.getAttribute('data-sd');
+        if(confirm('Stop tracking '+state.stock[k].name+'? Your sales are not affected.')){delete state.stock[k];save();render();}
+      };
+    });
+    $('lowBanner').hidden=!low.length;
+    $('lowMsg').textContent='⚠️ Running low: '+low.slice(0,3).map(function(k){return state.stock[k].name+' ('+state.stock[k].qty+')';}).join(', ')+(low.length>3?' +'+(low.length-3)+' more':'');
+    updateStockHint();
+  }
   function renderDeliveries(){
     var p=state.sales.filter(function(s){return s.delivery==='Pending';}).sort(function(a,b){return a.date<b.date?-1:1;});
     $('delCard').hidden=!p.length;
@@ -701,7 +909,78 @@
       };
     });
   }
-  function render(){renderDash();renderLists();renderDeliveries();renderDebts();checkBackup();}
+  function showTab(n){
+    ['home','sales','stock','people','more'].forEach(function(t){$('tab-'+t).hidden=(t!==n);});
+    document.querySelectorAll('.bnav button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-tab')===n);});
+    document.body.scrollTop=0; window.scrollTo(0,0);
+  }
+  function closeSheets(){$('saleSheet').hidden=true;$('expSheet').hidden=true;try{document.activeElement.blur();}catch(e){}}
+  function openSheet(id,focusId){setDefaults();$(id).hidden=false;setTimeout(function(){$(focusId).focus();},120);}
+  function renderCustomers(){
+    var g={},total=0;
+    state.sales.forEach(function(s){
+      var n=(s.customer||'').trim(); if(!n)return; var k=n.toLowerCase();
+      if(!g[k]){g[k]={name:n,orders:0,total:0,owe:0,last:''};total++;}
+      g[k].orders++; g[k].total+=s.total; g[k].owe+=bal(s); if(s.date>g[k].last)g[k].last=s.date;
+    });
+    var q=($('custQ').value||'').trim().toLowerCase();
+    var keys=Object.keys(g).filter(function(k){return !q||k.indexOf(q)>-1;}).sort(function(a,b){return g[b].total-g[a].total;}).slice(0,100);
+    $('custCount').textContent=total+(total===1?' customer':' customers');
+    $('custEmpty').hidden=total>0;
+    $('custRows').innerHTML=keys.map(function(k){
+      var c=g[k], ph=state.phones[k];
+      return '<div class="stock-row"><div class="stock-name">'+esc(c.name)+'<span class="stock-cost">'+c.orders+(c.orders===1?' order':' orders')+' · last '+fmtDate(c.last)+'</span></div>'+
+        '<div class="stock-qty ok" style="min-width:96px">'+naira(c.total)+(c.owe>0?'<small style="color:#b91c1c">owes '+naira(c.owe)+'</small>':'<small>spent</small>')+'</div>'+
+        (ph?'<a class="btn-sm btn-wa" target="_blank" rel="noopener" href="https://wa.me/'+waNum(ph)+'">💬</a>':'')+
+        '<button class="del-btn" data-cm="'+esc(k)+'" title="Rename or merge">✎</button><button class="del-btn" data-cx="'+esc(k)+'" title="Remove name">×</button></div>';
+    }).join('');
+    $('custRows').querySelectorAll('[data-cx]').forEach(function(b){
+      b.onclick=function(){
+        var k=b.getAttribute('data-cx'), c=g[k];
+        if(c.owe>0){toast(c.name+' still owes '+naira(c.owe)+'. Record their payment first.');return;}
+        if(!confirm('Remove the name "'+c.name+'" from '+c.orders+(c.orders===1?' sale':' sales')+'? The sales and your totals stay.'))return;
+        state.sales.forEach(function(s){if(skey(s.customer)===k)s.customer='';});
+        delete state.phones[k]; save(); render(); toast('Name removed');
+      };
+    });
+    $('custRows').querySelectorAll('[data-cm]').forEach(function(b){
+      b.onclick=function(){
+        var k=b.getAttribute('data-cm'), c=g[k];
+        var nn=prompt('New name for "'+c.name+'".\nIf it matches another customer, their sales are combined.',c.name);
+        if(nn===null)return; nn=nn.trim(); if(!nn)return;
+        var nk=skey(nn), target=g[nk]&&nk!==k?g[nk].name:nn;
+        if(nk!==k&&g[nk]&&!confirm('Combine "'+c.name+'" with "'+g[nk].name+'"? All '+c.orders+(c.orders===1?' sale goes':' sales go')+' under "'+g[nk].name+'".'))return;
+        state.sales.forEach(function(s){if(skey(s.customer)===k)s.customer=target;});
+        if(nk!==k){
+          if(state.phones[k]&&!state.phones[nk])state.phones[nk]=state.phones[k];
+          delete state.phones[k];
+        }
+        save(); render(); toast(nk!==k&&g[nk]?'Customers combined':'Name changed');
+      };
+    });
+  }
+  function renderReports(){
+    var n=new Date(), y=n.getFullYear(), m=n.getMonth();
+    var f0=ymd(new Date(y,m,1)), t0=today(), f1=ymd(new Date(y,m-1,1)), t1=ymd(new Date(y,m,0));
+    var a=sumSales(f0,t0), b=sumSales(f1,t1), ea=sumExp(f0,t0), eb=sumExp(f1,t1);
+    var prod={},cus={};
+    state.sales.forEach(function(s){
+      if(s.date<f0||s.date>t0)return;
+      var pk=skey(s.product); if(!prod[pk])prod[pk]={n:s.product,q:0,t:0}; prod[pk].q+=s.qty; prod[pk].t+=s.total;
+      if(s.customer){var ck=skey(s.customer); if(!cus[ck])cus[ck]={n:s.customer,o:0,t:0}; cus[ck].o++; cus[ck].t+=s.total;}
+    });
+    function top(o){var best=null;Object.keys(o).forEach(function(k){if(!best||o[k].t>best.t)best=o[k];});return best;}
+    function row(l,x,y){return '<div class="rep-row"><span>'+l+'</span><span><b>'+naira(x)+'</b></span><span>'+naira(y)+'</span></div>';}
+    var bp=top(prod), bc=top(cus), ch='';
+    if(b.total>0){var pc=Math.round((a.total-b.total)/b.total*100);ch=(pc>=0?'▲ ':'▼ ')+Math.abs(pc)+'% sales compared with last month. ';}
+    $('reportBody').innerHTML='<div class="rep-row rep-h"><span></span><span>This month</span><span>Last month</span></div>'+
+      row('Sales',a.total,b.total)+row('Expenses',ea,eb)+row('Profit',a.profit-ea,b.profit-eb)+
+      '<div class="rep-note">'+ch+(bp?'🏆 Best seller: <b>'+esc(bp.n)+'</b> ('+bp.q+' sold, '+naira(bp.t)+')<br>':'No sales this month yet.<br>')+
+      (bc?'⭐ Best customer: <b>'+esc(bc.n)+'</b> ('+naira(bc.t)+')<br>':'')+
+      '<span style="color:#94a3b8">Profit counts sales where you entered a cost.</span></div>';
+  }
+  function render(){renderDash();renderLists();renderDeliveries();renderDebts();renderStock();renderCustomers();renderReports();checkBackup();
+    if(document.activeElement!==$('bizName'))$('bizName').value=state.settings.bizName||'';}
 
   // payment modal
   function openPay(k){
@@ -734,11 +1013,12 @@
     e.preventDefault();
     var product=$('fProduct').value.trim(), qty=parseFloat($('fQty').value), price=parseFloat($('fPrice').value);
     var pay=$('fPayment').value, cust=$('fCustomer').value.trim(), costRaw=$('fCost').value;
-    var fee=parseFloat($('fFee').value)||0, phone=$('fPhone').value.trim(), status=$('fStatus').value;
+    var fee=parseFloat($('fFee').value)||0, disc=parseFloat($('fDisc').value)||0, phone=$('fPhone').value.trim(), status=$('fStatus').value;
     var cost=costRaw===''?null:parseFloat(costRaw), date=$('fDate').value||today();
     if(!product||!(qty>0)||isNaN(price)||price<0){toast('Fill in item, quantity and price');return;}
     if(pay==='Credit (Owe)'&&!cust){toast('Enter the customer name for credit sales');$('fCustomer').focus();return;}
-    var total=Math.round((qty*price+fee)*100)/100, payments=[];
+    if(disc>qty*price){toast('Discount is more than the items cost');return;}
+    var total=Math.round((qty*price+fee-disc)*100)/100, payments=[];
     if(phone&&!waNum(phone)){toast('Phone number does not look right');$('fPhone').focus();return;}
     if(pay==='Credit (Owe)'){
       var dep=parseFloat($('fDeposit').value)||0;
@@ -747,12 +1027,15 @@
     }else{
       payments.push({id:uid(),date:date,amt:total,method:pay});
     }
-    state.sales.push({id:uid(),date:date,product:product,qty:qty,price:price,cost:(cost!=null&&!isNaN(cost))?cost:null,payment:pay,customer:cust,total:total,fee:fee,delivery:status,payments:payments});
+    state.sales.push({id:uid(),date:date,product:product,qty:qty,price:price,cost:(cost!=null&&!isNaN(cost))?cost:null,payment:pay,customer:cust,total:total,fee:fee,disc:disc,delivery:status,payments:payments,stockKey:null,stockUsed:0});
+    var sk=state.stock[skey(product)], stockMsg='';
+    if(cost!=null&&!isNaN(cost)&&price<cost)stockMsg+=' ⚠️ Sold below cost';
+    if(sk){var used=Math.min(qty,sk.qty), last=state.sales[state.sales.length-1]; sk.qty-=used; last.stockKey=skey(product); last.stockUsed=used; if(used<qty)stockMsg=' (only '+used+' were in stock)'; else if(sk.qty<=sk.low)stockMsg=' ('+sk.qty+' left)';}
     if(cust&&phone)state.phones[cust.toLowerCase()]=phone;
     save();
     this.reset(); $('fQty').value=1; $('depositLabel').hidden=true; setDefaults();
-    render(); toast('Sale added: '+naira(total));
-    $('fProduct').focus();
+    render(); toast('Sale added: '+naira(total)+stockMsg);
+    closeSheets();
   });
 
   $('expenseForm').addEventListener('submit',function(e){
@@ -760,7 +1043,7 @@
     var desc=$('eDesc').value.trim(), amt=parseFloat($('eAmount').value);
     if(!desc||!(amt>0)){toast('Fill in description and amount');return;}
     state.expenses.push({id:uid(),date:$('eDate').value||today(),desc:desc,amount:amt});
-    save(); this.reset(); setDefaults(); render(); toast('Expense added');
+    save(); this.reset(); setDefaults(); render(); closeSheets(); toast('Expense added');
   });
 
   // backup / restore
@@ -788,7 +1071,7 @@
           var d=JSON.parse(r.result);
           if(!d||!Array.isArray(d.sales))throw 0;
           if(!confirm('This will replace your current records with the backup. Continue?'))return;
-          state.sales=d.sales; state.expenses=d.expenses||[]; state.phones=d.phones||{}; save(); render(); toast('Data restored');
+          state.sales=d.sales; state.expenses=d.expenses||[]; state.phones=d.phones||{}; state.stock=d.stock||{}; state.settings=d.settings||{}; save(); render(); toast('Data restored');
         }catch(e){toast('That file is not a valid backup');}
       };
       r.readAsText(f);
@@ -798,7 +1081,7 @@
   $('btnClear').onclick=function(){
     if(!confirm('Delete ALL sales and expenses? This cannot be undone.'))return;
     if(!confirm('Are you sure? Save a backup first if unsure.'))return;
-    state={sales:[],expenses:[],phones:{}}; save(); render(); toast('All data cleared');
+    state={sales:[],expenses:[],phones:{},stock:{},settings:{}}; save(); render(); toast('All data cleared');
   };
 
   // install
@@ -822,10 +1105,36 @@
       setTimeout(function(){try{el.scrollIntoView({block:'center'});}catch(e){}},350);
     });
   });
+  $('salesMore').onclick=function(){salesAll=!salesAll;render();};
+  $('expMore').onclick=function(){expAll=!expAll;render();};
+  $('fProduct').addEventListener('input',updateStockHint);
+  $('fProduct').addEventListener('change',function(){fillFromProduct();updateStockHint();});
+  $('lowGo').onclick=function(){showTab('stock');};
+  $('sAdd').onclick=function(){
+    var name=$('sName').value.trim(), qty=parseInt($('sQty').value,10), low=parseInt($('sLow').value,10);
+    if(!name||isNaN(qty)||qty<0){toast('Enter product name and units');return;}
+    if(isNaN(low)||low<0)low=3;
+    var k=skey(name);
+    var cost=parseFloat($('sCost').value); if(isNaN(cost)||cost<0)cost=null;
+    if(state.stock[k]){var o=state.stock[k]; o.cost=avgCost(o,qty,cost); o.qty+=qty;o.low=low;toast('Added to existing stock');}
+    else{state.stock[k]={name:name,qty:qty,low:low,cost:cost};toast('Stock added');}
+    save(); $('sName').value='';$('sQty').value='';$('sLow').value='';$('sCost').value=''; render();
+  };
   $('fCustomer').addEventListener('input',function(){
     var ph=state.phones[this.value.trim().toLowerCase()];
     if(ph&&!$('fPhone').value)$('fPhone').value=ph;
   });
+
+  document.querySelectorAll('.bnav button').forEach(function(b){b.onclick=function(){showTab(b.getAttribute('data-tab'));};});
+  $('fab').onclick=function(){openSheet('saleSheet','fProduct');};
+  $('btnAddExp').onclick=function(){openSheet('expSheet','eDesc');};
+  document.querySelectorAll('[data-close]').forEach(function(b){b.onclick=closeSheets;});
+  ['saleSheet','expSheet'].forEach(function(id){$(id).addEventListener('click',function(e){if(e.target===this)closeSheets();});});
+  $('salesQ').addEventListener('input',function(){salesQ=this.value;renderLists();});
+  $('custQ').addEventListener('input',renderCustomers);
+  $('bizName').addEventListener('input',function(){state.settings.bizName=this.value.trim();save();});
+  var oc=$('owedValue').closest('.kpi'); if(oc){oc.style.cursor='pointer';oc.onclick=function(){showTab('people');};}
+  try{if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0)navigator.serviceWorker.register('sw.js');}catch(e){}
 
   load(); setDefaults(); render();
 })();
