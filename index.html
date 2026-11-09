@@ -74,6 +74,9 @@
   .kpi.warn .kpi-value{color:#b45309}
   .kpi.profit{border-color:#bbf7d0;background:linear-gradient(180deg,#f0fdf4,#fff)}
   .kpi.profit .kpi-value{color:#047857}
+  .kpi.clickable{cursor:pointer;position:relative;transition:transform .15s,box-shadow .15s}
+  .kpi.clickable:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(15,23,42,.08)}
+  .kpi.clickable::after{content:"›";position:absolute;top:12px;right:14px;font-size:18px;color:#b45309;font-weight:700;opacity:.55;line-height:1}
 
   .sale-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:12px;align-items:end}
   .sale-form label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted);
@@ -336,31 +339,6 @@
   <button class="btn-sm" id="installDismiss">Got it</button>
 </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <main>
 <div class="tab" id="tab-home">
 <section class="hero">
@@ -399,6 +377,8 @@
     <div class="kpi-sub" id="profitSub">—</div>
   </div>
 </section>
+
+<button type="button" class="btn-sm" id="homeExpBtn" style="width:100%;justify-content:center;margin-bottom:10px;padding:10px;background:#fff">− Record an expense</button>
 
 <section class="card" id="delCard" style="border-left:4px solid #3b82f6" hidden>
   <div class="card-head"><h2>Orders to Deliver</h2><span class="muted" id="delCount"></span></div>
@@ -666,7 +646,7 @@
   function sumSales(from,to){
     var t=0,c=0,p=0;
     state.sales.forEach(function(s){
-      if(s.date>=from&&s.date<=to){t+=s.total;c++; if(s.cost!=null)p+=(s.price-s.cost)*s.qty-(s.disc||0);}
+      if(s.date>=from&&s.date<=to){t+=s.total;c++; if(s.cost!=null)p+=(s.price-s.cost)*s.qty+(s.fee||0)-(s.disc||0);}
     });
     return {total:t,count:c,profit:p};
   }
@@ -766,7 +746,7 @@
     $('salesBody').querySelectorAll('[data-rc]').forEach(function(b){b.onclick=function(){sendReceipt(b.getAttribute('data-rc'));};});
 
     // expenses
-    var exAll=state.expenses.slice().sort(function(a,b){return a.date<b.date?1:-1;}), ex=expAll?exAll.slice(0,50):exAll.slice(0,3);
+    var exAll=state.expenses.slice().sort(function(a,b){return a.date<b.date?1:-1;}), ex=expAll?exAll:exAll.slice(0,3);
     $('expMore').hidden=exAll.length<=3; $('expMore').textContent=expAll?'Show less':'Show all ('+exAll.length+')';
     $('expCard').hidden=false; $('expBody').closest('.table-wrap').style.display=state.expenses.length?'':'none';
     $('expTotal').textContent='Last 30 days: '+naira(sumExp(daysAgo(29),today()));
@@ -927,13 +907,19 @@
     var keys=Object.keys(g).filter(function(k){return !q||k.indexOf(q)>-1;}).sort(function(a,b){return g[b].total-g[a].total;}).slice(0,100);
     $('custCount').textContent=total+(total===1?' customer':' customers');
     $('custEmpty').hidden=total>0;
-    $('custRows').innerHTML=keys.map(function(k){
-      var c=g[k], ph=state.phones[k];
-      return '<div class="stock-row"><div class="stock-name">'+esc(c.name)+'<span class="stock-cost">'+c.orders+(c.orders===1?' order':' orders')+' · last '+fmtDate(c.last)+'</span></div>'+
-        '<div class="stock-qty ok" style="min-width:96px">'+naira(c.total)+(c.owe>0?'<small style="color:#b91c1c">owes '+naira(c.owe)+'</small>':'<small>spent</small>')+'</div>'+
-        (ph?'<a class="btn-sm btn-wa" target="_blank" rel="noopener" href="https://wa.me/'+waNum(ph)+'">💬</a>':'')+
-        '<button class="del-btn" data-cm="'+esc(k)+'" title="Rename or merge">✎</button><button class="del-btn" data-cx="'+esc(k)+'" title="Remove name">×</button></div>';
-    }).join('');
+    if(keys.length){
+      $('custRows').innerHTML=keys.map(function(k){
+        var c=g[k], ph=state.phones[k];
+        return '<div class="stock-row"><div class="stock-name">'+esc(c.name)+'<span class="stock-cost">'+c.orders+(c.orders===1?' order':' orders')+' · last '+fmtDate(c.last)+'</span></div>'+
+          '<div class="stock-qty ok" style="min-width:96px">'+naira(c.total)+(c.owe>0?'<small style="color:#b91c1c">owes '+naira(c.owe)+'</small>':'<small>spent</small>')+'</div>'+
+          (ph?'<a class="btn-sm btn-wa" target="_blank" rel="noopener" href="https://wa.me/'+waNum(ph)+'">💬</a>':'')+
+          '<button class="del-btn" data-cm="'+esc(k)+'" title="Rename or merge">✎</button><button class="del-btn" data-cx="'+esc(k)+'" title="Remove name">×</button></div>';
+      }).join('');
+    }else if(total>0&&q){
+      $('custRows').innerHTML='<div class="empty-box" style="padding:18px 12px">No customer matches "'+esc(q)+'".</div>';
+    }else{
+      $('custRows').innerHTML='';
+    }
     $('custRows').querySelectorAll('[data-cx]').forEach(function(b){
       b.onclick=function(){
         var k=b.getAttribute('data-cx'), c=g[k];
@@ -1030,7 +1016,7 @@
     state.sales.push({id:uid(),date:date,product:product,qty:qty,price:price,cost:(cost!=null&&!isNaN(cost))?cost:null,payment:pay,customer:cust,total:total,fee:fee,disc:disc,delivery:status,payments:payments,stockKey:null,stockUsed:0});
     var sk=state.stock[skey(product)], stockMsg='';
     if(cost!=null&&!isNaN(cost)&&price<cost)stockMsg+=' ⚠️ Sold below cost';
-    if(sk){var used=Math.min(qty,sk.qty), last=state.sales[state.sales.length-1]; sk.qty-=used; last.stockKey=skey(product); last.stockUsed=used; if(used<qty)stockMsg=' (only '+used+' were in stock)'; else if(sk.qty<=sk.low)stockMsg=' ('+sk.qty+' left)';}
+    if(sk){var used=Math.min(qty,sk.qty), last=state.sales[state.sales.length-1]; sk.qty-=used; last.stockKey=skey(product); last.stockUsed=used; if(used<qty)stockMsg+=' (only '+used+' were in stock)'; else if(sk.qty<=sk.low)stockMsg+=' ('+sk.qty+' left)';}
     if(cust&&phone)state.phones[cust.toLowerCase()]=phone;
     save();
     this.reset(); $('fQty').value=1; $('depositLabel').hidden=true; setDefaults();
@@ -1128,12 +1114,13 @@
   document.querySelectorAll('.bnav button').forEach(function(b){b.onclick=function(){showTab(b.getAttribute('data-tab'));};});
   $('fab').onclick=function(){openSheet('saleSheet','fProduct');};
   $('btnAddExp').onclick=function(){openSheet('expSheet','eDesc');};
+  $('homeExpBtn').onclick=function(){openSheet('expSheet','eDesc');};
   document.querySelectorAll('[data-close]').forEach(function(b){b.onclick=closeSheets;});
   ['saleSheet','expSheet'].forEach(function(id){$(id).addEventListener('click',function(e){if(e.target===this)closeSheets();});});
-  $('salesQ').addEventListener('input',function(){salesQ=this.value;renderLists();});
+  $('salesQ').addEventListener('input',function(){salesQ=this.value;salesAll=false;renderLists();});
   $('custQ').addEventListener('input',renderCustomers);
   $('bizName').addEventListener('input',function(){state.settings.bizName=this.value.trim();save();});
-  var oc=$('owedValue').closest('.kpi'); if(oc){oc.style.cursor='pointer';oc.onclick=function(){showTab('people');};}
+  var oc=$('owedValue').closest('.kpi'); if(oc){oc.classList.add('clickable');oc.onclick=function(){showTab('people');};}
   try{if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0)navigator.serviceWorker.register('sw.js');}catch(e){}
 
   load(); setDefaults(); render();
