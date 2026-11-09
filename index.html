@@ -219,7 +219,6 @@
     .kpi{padding:13px}
   }
 
-  /* compact layout */
   body{padding:12px 12px calc(48px + env(safe-area-inset-bottom));font-size:14px}
   h1{font-size:clamp(18px,5vw,22px)}
   .top{margin-bottom:10px;gap:10px;flex-wrap:nowrap}
@@ -241,7 +240,6 @@
   .btn-primary{padding:10px 16px;font-size:14px}
   .banner{padding:9px 12px;margin-bottom:10px}
 
-  /* fixes: naira sign overlap + typing jitter */
   .sale-form{align-items:start}
   .sale-form input,.sale-form select,.modal input,.modal select{font-size:16px;transition:none;min-height:42px}
   .naira-input{width:100%}
@@ -250,11 +248,9 @@
   input,select,button{touch-action:manipulation}
   input,select{scroll-margin-top:140px;scroll-margin-bottom:140px}
 
-  /* page scrolls inside body so the host app's toolbar can't jump the screen while typing */
   html{height:100%;overflow:hidden;overscroll-behavior:none}
   body{height:100%;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 
-  /* hero 7-day chart */
   .hero-spark{height:auto;margin-top:12px}
   .hs{display:flex;gap:6px;align-items:flex-end}
   .hs-col{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center}
@@ -265,7 +261,6 @@
   .hs-lbl{font-size:10.5px;margin-top:5px;opacity:.85;font-weight:600}
   .hs-col.today .hs-lbl{opacity:1;font-weight:800}
 
-  /* stock */
   .stock-hint{font-size:12px;font-weight:600;text-transform:none;letter-spacing:0;margin-top:5px}
   .stock-hint.ok{color:#047857}.stock-hint.low{color:#b45309}.stock-hint.out{color:#b91c1c}
   .stock-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-top:1px solid #eef1f5}
@@ -286,7 +281,6 @@
   .backup-box summary::-webkit-details-marker{display:none}
   .backup-box summary .muted{font-weight:500;font-size:12px}
 
-  /* tabs, nav, sheets */
   body{padding-bottom:calc(120px + env(safe-area-inset-bottom))}
   .bnav{position:fixed;left:0;right:0;bottom:0;z-index:40;background:#fff;border-top:1px solid #e2e8f0;display:flex;padding:4px 4px calc(4px + env(safe-area-inset-bottom))}
   .bnav button{flex:1;background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:1px;font:inherit;font-size:11px;font-weight:700;color:#64748b;padding:6px 0;cursor:pointer}
@@ -605,7 +599,14 @@
   function ymd(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
   function today(){return ymd(new Date());}
   function daysAgo(n){var d=new Date();d.setDate(d.getDate()-n);return ymd(d);}
-  function naira(n){n=Math.round((n||0)*100)/100;return '₦'+n.toLocaleString('en-NG',{maximumFractionDigits:2});}
+  
+  // Formats negative money as -₦36,285 instead of ₦-36,285
+  function naira(n){
+    n = Math.round((n||0)*100)/100;
+    if(n < 0) return '-₦' + Math.abs(n).toLocaleString('en-NG',{maximumFractionDigits:2});
+    return '₦' + n.toLocaleString('en-NG',{maximumFractionDigits:2});
+  }
+  
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
   function fmtDate(s){var p=s.split('-');var d=new Date(+p[0],+p[1]-1,+p[2]);return d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});}
   var tt;
@@ -660,6 +661,7 @@
     $('todayValue').textContent=naira(tS.total);
     $('todayCount').textContent=tS.count+(tS.count===1?' sale':' sales');
     $('todayProfit').textContent='Profit: '+naira(tS.profit);
+    
     var w=sumSales(daysAgo(6),td), m=sumSales(daysAgo(29),td);
     $('weekValue').textContent=naira(w.total); $('weekSub').textContent=w.count+(w.count===1?' sale':' sales');
     $('monthValue').textContent=naira(m.total); $('monthSub').textContent=m.count+(m.count===1?' sale':' sales');
@@ -671,7 +673,9 @@
 
     var exp=sumExp(daysAgo(29),td);
     if(m.profit||exp){
-      $('profitValue').textContent=naira(m.profit-exp);
+      var net = m.profit-exp;
+      $('profitValue').textContent=naira(net);
+      $('profitValue').style.color = net < 0 ? '#dc2626' : '#047857'; 
       $('profitSub').textContent='Profit '+naira(m.profit)+' − expenses '+naira(exp);
     }else{
       $('profitValue').textContent='—'; $('profitSub').textContent='Add cost per unit to see profit';
@@ -692,7 +696,7 @@
       var dn=new Date(x.d+'T00:00:00').toLocaleDateString('en-GB',{weekday:'short'});
       return '<div class="hs-col'+(k===6?' today':'')+'"><div class="hs-track"><div class="hs-val">'+short(x.v)+'</div><div class="hs-bar" style="height:'+bh+'px"></div></div><div class="hs-lbl">'+(k===6?'Today':dn)+'</div></div>';
     }).join('')+'</div>';
-    // payment methods (money actually received in last 30 days by sale date)
+    // payment methods
     var by={},from=daysAgo(29);
     state.sales.forEach(function(s){if(s.date>=from&&s.date<=td){by[pm(s.payment)]=(by[pm(s.payment)]||0)+s.total;}});
     var keys=Object.keys(by).sort(function(a,b){return by[b]-by[a];}), tot=keys.reduce(function(a,k){return a+by[k];},0);
@@ -703,7 +707,6 @@
   }
 
   function renderLists(){
-    // suggestions in the sale form come from My Stock only
     var prods={},custs={};
     state.sales.slice().sort(function(a,b){return a.date<b.date?1:-1;}).forEach(function(s){
       var k=skey(s.product); if(!prods[k])prods[k]={name:s.product,price:s.price,cost:s.cost,n:0}; prods[k].n++;
@@ -733,12 +736,19 @@
     $('salesMore').hidden=q||allRows.length<=5; $('salesMore').textContent=salesAll?'Show less':'Show all ('+allRows.length+')';
     $('salesCount').textContent=state.sales.length+(state.sales.length===1?' sale':' sales')+' total';
     $('salesEmpty').hidden=state.sales.length>0;
+    
+    // UPDATED: Added margin-left so Pending and Loss badges don't touch
     $('salesBody').innerHTML=rows.map(function(s){
       var b=bal(s);
-      return '<tr><td>'+fmtDate(s.date)+'</td><td>'+esc(s.product)+(s.delivery==='Pending'?' <span class="badge b-partial">Pending</span>':'')+'</td><td class="num">'+s.qty+'</td><td class="num">'+naira(s.total)+
+      var isLoss = (s.cost != null && s.price < s.cost);
+      var lossBadge = isLoss ? '<span class="badge b-credit" style="font-size:10px;padding:2px 6px;margin-left:4px">⚠️ Loss</span>' : '';
+      var pendBadge = s.delivery==='Pending' ? '<span class="badge b-partial" style="margin-left:4px">Pending</span>' : '';
+      
+      return '<tr><td>'+fmtDate(s.date)+'</td><td>'+esc(s.product)+pendBadge+lossBadge+'</td><td class="num">'+s.qty+'</td><td class="num">'+naira(s.total)+
         '</td><td><span class="badge '+badgeClass(s.payment)+'">'+esc(pm(s.payment))+'</span></td><td>'+esc(s.customer||'—')+
         '</td><td class="num '+(b>0?'bal-red':'bal-ok')+'">'+(b>0?naira(b):'—')+'</td><td style="white-space:nowrap"><button class="del-btn" data-rc="'+s.id+'" title="Send receipt">🧾</button><button class="del-btn" data-del="'+s.id+'" title="Delete">×</button></td></tr>';
     }).join('');
+    
     $('salesBody').querySelectorAll('[data-del]').forEach(function(b){
       b.onclick=function(){if(confirm('Delete this sale?')){state.sales.forEach(function(s){if(s.id===b.getAttribute('data-del')&&s.stockKey&&state.stock[s.stockKey])state.stock[s.stockKey].qty+=s.stockUsed||0;});state.sales=state.sales.filter(function(s){return s.id!==b.getAttribute('data-del');});save();render();toast('Sale deleted');}};
     });
