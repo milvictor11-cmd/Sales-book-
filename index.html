@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>try{var _t=localStorage.getItem("salesbook_theme");if(!_t)_t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.setAttribute("data-theme",_t);}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <title>My Sales Book</title>
 <meta name="theme-color" content="#047857">
@@ -11,6 +12,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Sales Book">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   *,*::before,*::after{box-sizing:border-box}
   :root{
@@ -74,9 +76,6 @@
   .kpi.warn .kpi-value{color:#b45309}
   .kpi.profit{border-color:#bbf7d0;background:linear-gradient(180deg,#f0fdf4,#fff)}
   .kpi.profit .kpi-value{color:#047857}
-  .kpi.clickable{cursor:pointer;position:relative;transition:transform .15s,box-shadow .15s}
-  .kpi.clickable:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(15,23,42,.08)}
-  .kpi.clickable::after{content:"›";position:absolute;top:12px;right:14px;font-size:18px;color:#b45309;font-weight:700;opacity:.55;line-height:1}
 
   .sale-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:12px;align-items:end}
   .sale-form label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted);
@@ -219,6 +218,7 @@
     .kpi{padding:13px}
   }
 
+  /* compact layout */
   body{padding:12px 12px calc(48px + env(safe-area-inset-bottom));font-size:14px}
   h1{font-size:clamp(18px,5vw,22px)}
   .top{margin-bottom:10px;gap:10px;flex-wrap:nowrap}
@@ -240,6 +240,7 @@
   .btn-primary{padding:10px 16px;font-size:14px}
   .banner{padding:9px 12px;margin-bottom:10px}
 
+  /* fixes: naira sign overlap + typing jitter */
   .sale-form{align-items:start}
   .sale-form input,.sale-form select,.modal input,.modal select{font-size:16px;transition:none;min-height:42px}
   .naira-input{width:100%}
@@ -248,9 +249,11 @@
   input,select,button{touch-action:manipulation}
   input,select{scroll-margin-top:140px;scroll-margin-bottom:140px}
 
+  /* page scrolls inside body so the host app's toolbar can't jump the screen while typing */
   html{height:100%;overflow:hidden;overscroll-behavior:none}
   body{height:100%;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 
+  /* hero 7-day chart */
   .hero-spark{height:auto;margin-top:12px}
   .hs{display:flex;gap:6px;align-items:flex-end}
   .hs-col{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center}
@@ -261,6 +264,7 @@
   .hs-lbl{font-size:10.5px;margin-top:5px;opacity:.85;font-weight:600}
   .hs-col.today .hs-lbl{opacity:1;font-weight:800}
 
+  /* stock */
   .stock-hint{font-size:12px;font-weight:600;text-transform:none;letter-spacing:0;margin-top:5px}
   .stock-hint.ok{color:#047857}.stock-hint.low{color:#b45309}.stock-hint.out{color:#b91c1c}
   .stock-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-top:1px solid #eef1f5}
@@ -281,6 +285,7 @@
   .backup-box summary::-webkit-details-marker{display:none}
   .backup-box summary .muted{font-weight:500;font-size:12px}
 
+  /* tabs, nav, sheets */
   body{padding-bottom:calc(120px + env(safe-area-inset-bottom))}
   .bnav{position:fixed;left:0;right:0;bottom:0;z-index:40;background:#fff;border-top:1px solid #e2e8f0;display:flex;padding:4px 4px calc(4px + env(safe-area-inset-bottom))}
   .bnav button{flex:1;background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:1px;font:inherit;font-size:11px;font-weight:700;color:#64748b;padding:6px 0;cursor:pointer}
@@ -297,6 +302,256 @@
   .rep-row span:nth-child(n+2){text-align:right}
   .rep-h{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;border-top:0}
   .rep-note{font-size:13px;color:#475569;margin-top:10px;line-height:1.5}
+
+  /* ===== premium dashboard layer ===== */
+  :root{--bg:#f7f8fa;--text:#0b1220;--muted:#5b6577;--line:#e5e8ee;--radius:20px;--green-dark:#047857}
+  body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:14px}
+  h1{font-weight:800;letter-spacing:-.025em}
+  .n,.hero-value,.kpi-value,.hs-val{font-variant-numeric:tabular-nums}
+  #lowBanner{display:none!important}
+  .greet{font-size:13px;color:var(--muted);font-weight:500;margin:0 0 2px}
+  .sync{display:inline-flex;align-items:center;gap:6px;background:#ecfdf5;color:#065f46;font-size:12px;font-weight:700;padding:7px 12px;border-radius:999px}
+  .sync i{width:7px;height:7px;border-radius:50%;background:#10b981;display:block}
+  .sync.off{background:#f1f5f9;color:#475569}.sync.off i{background:#94a3b8}
+  .hero{background:linear-gradient(145deg,#047857,#065f46);border-radius:20px;padding:18px 18px 14px;box-shadow:0 10px 28px -14px rgba(4,120,87,.55)}
+  .hero::after{display:none}
+  .hero-label{color:#d1fae5;opacity:1;font-size:12px}
+  .hero-date{color:#d1fae5;opacity:1;font-size:12px}
+  .hero-value{font-size:clamp(32px,9vw,40px);letter-spacing:-.03em;margin:8px 0 8px}
+  .hero-sub{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:12px;font-weight:700}
+  .hero-sub .dot{display:none}
+  .chip{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.18);color:#fff;padding:5px 10px;border-radius:12px;font-size:12px;font-weight:700;white-space:nowrap}
+  .hs-bar{background:rgba(255,255,255,.35)}
+  .hs-lbl{color:#d1fae5;opacity:1}
+  .qa{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+  .qa button{appearance:none;background:#fff;border:1px solid var(--line);border-radius:16px;min-height:56px;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:8px;font:inherit;font-size:13px;font-weight:700;color:var(--text);cursor:pointer;transition:transform .12s}
+  .qa button:active{transform:scale(.96)}
+  .qa .pri{color:#047857}.qa .amb{color:#92400e}
+  .kpi{border-radius:20px;padding:14px;border:1px solid var(--line);background:#fff}
+  .kpi-label{color:var(--muted);font-size:10.5px}
+  .kpi-value{font-size:clamp(19px,5.5vw,22px);font-weight:800}
+  .kpi-sub{color:var(--muted);font-size:12px}
+  .kpi-sub .up{color:#047857;font-weight:700}.kpi-sub .down{color:#b91c1c;font-weight:700}
+  .kpi.warn{background:#fffbeb;border-color:#fde68a}.kpi.warn .kpi-label,.kpi.warn .kpi-sub{color:#92400e}
+  .kpi.warn .kpi-value{color:#92400e}
+  .kpi.profit{background:#fff;border-color:var(--line)}
+  .kpi svg.sp{display:block;width:100%;height:30px;margin-top:6px}
+  .att-row{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:46px;padding:4px 0;border-top:1px solid #eef0f4;cursor:pointer;font-size:14px}
+  .att-row:first-of-type{border-top:0}
+  .att-row span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis}
+  .pill{font-size:12px;font-weight:700;padding:4px 10px;border-radius:12px;white-space:nowrap}
+  .pill.r{background:#fee2e2;color:#b91c1c}.pill.a{background:#fef3c7;color:#92400e}.pill.g{background:#ecfdf5;color:#065f46}
+  .card{border-radius:20px}
+  .bnav button{color:var(--muted);font-weight:600}
+  .bnav button.on{color:#047857;font-weight:800}
+  .bnav svg{width:22px;height:22px;display:block}
+  .fab{background:#047857;box-shadow:0 8px 20px rgba(4,120,87,.4)}
+  .fab svg{width:26px;height:26px}
+
+  .btn-ro{background:#fff;border-color:#a7f3d0;color:#047857}
+  .tax-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+  .tax-grid label{display:flex;flex-direction:column;gap:6px;font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+  .tax-grid input{background:#fff;border:1px solid #cbd5e1;padding:9px 10px;border-radius:10px;font:inherit;font-size:16px;min-height:42px;width:100%}
+  .tax-presets{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  .tax-sum .rep-row{grid-template-columns:1fr auto}
+  .ro-hint{font-size:12px;color:var(--muted);margin:-4px 0 4px;line-height:1.45}
+  .b-loss{background:#fee2e2;color:#b91c1c;margin-left:6px}
+  #backupBanner{display:none!important}
+
+  /* ===== minimalist redesign ===== */
+  :root{--bg:#f6f7f6;--line:#eceeed;--radius:18px}
+  body{background:var(--bg);color:#111827}
+  .card,.kpi{border:0;box-shadow:none;border-radius:18px;background:#fff}
+  .card{padding:16px}
+  h2{font-size:14px;font-weight:700;color:#111827}
+  .card-head .muted{font-size:12px}
+  .hero{background:#064e3b;box-shadow:none;border-radius:20px;padding:18px 18px 12px}
+  .hero-label,.hero-date{color:#a7f3d0;font-size:11.5px}
+  .hero-value{font-weight:800;margin:10px 0 10px}
+  .chip{background:rgba(255,255,255,.12);font-weight:600}
+  .hs-bar{background:rgba(255,255,255,.22)}
+  .hs-col.today .hs-bar{background:#6ee7b7}
+  .hs-lbl{color:#a7f3d0}
+  .hero-share{appearance:none;background:none;border:0;color:#a7f3d0;font:inherit;font-size:12px;font-weight:600;padding:12px 0 4px;cursor:pointer;display:block;margin:0 auto;text-decoration:underline;text-underline-offset:3px}
+  .qa button{border:0;background:#fff;border-radius:16px;box-shadow:none}
+  .kpi-label{letter-spacing:.04em;font-weight:600}
+  .kpi.warn{background:#fffbeb;border:0}
+  .kpi.profit{border:0}
+  .kpi svg.sp{opacity:.9}
+  .btn-primary{background:#047857;box-shadow:none;border-radius:12px;font-weight:700}
+  .btn-primary:hover{filter:none;background:#065f46;transform:none}
+  .btn-expense{background:#b91c1c;box-shadow:none}
+  .btn-sm{border:0;background:#f3f4f3;border-radius:10px;font-weight:600}
+  .btn-sm:hover{background:#e9ebe9}
+  .btn-paid,.btn-ro{background:#ecfdf5;color:#047857;border:0}
+  .btn-wa{background:#ecfdf5;color:#047857;border:0}
+  .debt-card{border:0;border-left:0;background:#fafaf9;border-radius:14px}
+  .tbl th{border-bottom:1px solid var(--line);color:#6b7280}
+  .tbl td{border-bottom:1px solid #f3f4f3}
+  .tbl tbody tr:hover td{background:transparent}
+  .sale-form input,.sale-form select,.modal input,.modal select,.searchbox,.tax-grid input{border:1px solid #e5e7eb;background:#fafaf9;border-radius:12px}
+  .sale-form input:focus,.sale-form select:focus,.modal input:focus,.modal select:focus{border-color:#10b981;box-shadow:0 0 0 3px rgba(16,185,129,.12);background:#fff}
+  .sheet{border-radius:22px 22px 0 0}
+  .bnav{border-top:0;box-shadow:0 -1px 0 #eceeed;background:rgba(255,255,255,.96)}
+  .bnav button{font-size:10.5px;font-weight:600}
+  .fab{background:#047857;box-shadow:0 6px 16px rgba(4,120,87,.3)}
+  .att-row{border-top:1px solid #f1f2f1}
+  .banner{border:0;border-radius:14px}
+  .backup-box{border-left:0}
+  .qp-chip{background:#f3f4f3;border:0}
+  .stock-row{border-top:1px solid #f1f2f1}
+  .badge{border-radius:8px}
+  #toast{background:#111827}
+
+  .debt-head>div:first-child{min-width:0;flex:1}
+  .debt-name{overflow-wrap:anywhere}
+  .debt-items{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .att-row span:first-child{overflow-wrap:anywhere}
+
+  /* ===== dark mode ===== */
+  html[data-theme="dark"]{background:#0a0f0d;color-scheme:dark}
+  [data-theme="dark"]{--bg:#0a0f0d;--card:#121917;--line:#24302c;--text:#e8efec;--muted:#9aa8a3;--green-dark:#34d399;--green-soft:#0e2a20;--amber-soft:#261e0d;--red-soft:#2c1517}
+  [data-theme="dark"] body{background:#0a0f0d;color:#e8efec}
+  [data-theme="dark"] h1,[data-theme="dark"] h2{color:#f1f6f4}
+  [data-theme="dark"] .card,[data-theme="dark"] .kpi,[data-theme="dark"] .qa button{background:#121917;border:1px solid #1e2926;color:#e8efec}
+  [data-theme="dark"] .qa .pri{color:#34d399}[data-theme="dark"] .qa .amb{color:#fbbf24}
+  [data-theme="dark"] .hero{background:linear-gradient(160deg,#0f3d2e,#0b2d22);border:1px solid #14503c}
+  [data-theme="dark"] .hero-label,[data-theme="dark"] .hero-date,[data-theme="dark"] .hs-lbl,[data-theme="dark"] .hero-share{color:#a7f3d0}
+  [data-theme="dark"] .kpi.warn{background:#261e0d;border-color:#4a3a12}
+  [data-theme="dark"] .kpi.warn .kpi-label,[data-theme="dark"] .kpi.warn .kpi-sub{color:#e9b949}
+  [data-theme="dark"] .kpi.warn .kpi-value{color:#fbbf24}
+  [data-theme="dark"] .kpi.profit{background:#121917}
+  [data-theme="dark"] .kpi-sub .up{color:#34d399}[data-theme="dark"] .kpi-sub .down{color:#f87171}
+  [data-theme="dark"] .greet,[data-theme="dark"] .sub,[data-theme="dark"] .muted{color:#9aa8a3}
+  [data-theme="dark"] .sync{background:#0e2a20;color:#6ee7b7}
+  [data-theme="dark"] .sync.off{background:#1b2522;color:#9aa8a3}
+  [data-theme="dark"] .icon-btn{background:#121917;border-color:#24302c;color:#e8efec}
+  [data-theme="dark"] .icon-btn:hover{background:#1b2522}
+  [data-theme="dark"] .btn-primary{background:#34d399;color:#03140c}
+  [data-theme="dark"] .btn-primary:hover{background:#6ee7b7}
+  [data-theme="dark"] .btn-expense{background:#f87171;color:#1a0505}
+  [data-theme="dark"] .btn-sm{background:#1b2522;color:#e8efec}
+  [data-theme="dark"] .btn-sm:hover{background:#24302c}
+  [data-theme="dark"] .btn-paid,[data-theme="dark"] .btn-ro,[data-theme="dark"] .btn-wa{background:#0e2a20;color:#6ee7b7}
+  [data-theme="dark"] .fab{background:#34d399;color:#03140c;box-shadow:0 6px 18px rgba(0,0,0,.5)}
+  [data-theme="dark"] .bnav{background:rgba(15,21,19,.96);box-shadow:0 -1px 0 #24302c}
+  [data-theme="dark"] .bnav button{color:#8a9893}
+  [data-theme="dark"] .bnav button.on{color:#34d399}
+  [data-theme="dark"] .sale-form input,[data-theme="dark"] .sale-form select,[data-theme="dark"] .modal input,[data-theme="dark"] .modal select,[data-theme="dark"] .searchbox,[data-theme="dark"] .tax-grid input{background:#0f1513;border-color:#2a3733;color:#e8efec}
+  [data-theme="dark"] .sale-form input::placeholder,[data-theme="dark"] .searchbox::placeholder,[data-theme="dark"] .modal input::placeholder{color:#7d8c87}
+  [data-theme="dark"] .sale-form input:focus,[data-theme="dark"] .sale-form select:focus,[data-theme="dark"] .modal input:focus,[data-theme="dark"] .searchbox:focus{border-color:#34d399;background:#121917;box-shadow:0 0 0 3px rgba(52,211,153,.15)}
+  [data-theme="dark"] .sale-form label,[data-theme="dark"] .modal label,[data-theme="dark"] .tax-grid label{color:#9aa8a3}
+  [data-theme="dark"] .naira-input .naira{color:#9aa8a3}
+  [data-theme="dark"] .sheet,[data-theme="dark"] .modal{background:#121917;color:#e8efec}
+  [data-theme="dark"] .sheet-overlay,[data-theme="dark"] .modal-overlay{background:rgba(0,0,0,.65)}
+  [data-theme="dark"] .modal-balance{background:#261e0d;border-color:#4a3a12;color:#fcd34d}
+  [data-theme="dark"] .modal-balance strong{color:#fbbf24}
+  [data-theme="dark"] .tbl th{color:#9aa8a3;border-bottom-color:#24302c}
+  [data-theme="dark"] .tbl td{border-bottom-color:#1b2522}
+  [data-theme="dark"] .del-btn{color:#7d8c87}
+  [data-theme="dark"] .del-btn:hover,[data-theme="dark"] .ph-del:hover{background:#3a1618;color:#f87171}
+  [data-theme="dark"] .debt-card{background:#18211e}
+  [data-theme="dark"] .debt-amount{color:#fbbf24}
+  [data-theme="dark"] .debt-progress-bar,[data-theme="dark"] .vbar-col,[data-theme="dark"] .hbar-track{background:#1b2522}
+  [data-theme="dark"] .bal-red{color:#f87171}[data-theme="dark"] .bal-ok{color:#7d8c87}
+  [data-theme="dark"] .att-row,[data-theme="dark"] .stock-row,[data-theme="dark"] .rep-row,[data-theme="dark"] .ph-row{border-color:#1b2522}
+  [data-theme="dark"] .stock-add,[data-theme="dark"] .pay-history{border-color:#2a3733}
+  [data-theme="dark"] .qp-chip,[data-theme="dark"] .quick-amounts button{background:#1b2522;color:#cbd5d1;border:0}
+  [data-theme="dark"] .qp-chip:hover,[data-theme="dark"] .quick-amounts button:hover{background:#0e2a20;color:#6ee7b7}
+  [data-theme="dark"] .stock-qty.ok,[data-theme="dark"] .stock-hint.ok{color:#34d399}
+  [data-theme="dark"] .stock-qty.low,[data-theme="dark"] .stock-hint.low{color:#fbbf24}
+  [data-theme="dark"] .stock-qty.out,[data-theme="dark"] .stock-hint.out{color:#f87171}
+  [data-theme="dark"] .badge.b-cash{background:#0e2a20;color:#6ee7b7}
+  [data-theme="dark"] .badge.b-transfer{background:#10233f;color:#93c5fd}
+  [data-theme="dark"] .badge.b-pos{background:#2a1d45;color:#c4b5fd}
+  [data-theme="dark"] .badge.b-credit,[data-theme="dark"] .badge.b-loss{background:#3a1618;color:#fca5a5}
+  [data-theme="dark"] .badge.b-partial{background:#33270c;color:#fcd34d}
+  [data-theme="dark"] .badge.b-paid{background:#1b2522;color:#cbd5d1}
+  [data-theme="dark"] .pill.r{background:#3a1618;color:#fca5a5}
+  [data-theme="dark"] .pill.a{background:#33270c;color:#fcd34d}
+  [data-theme="dark"] .pill.g{background:#0e2a20;color:#6ee7b7}
+  [data-theme="dark"] .banner{background:#33270c;color:#fcd34d}
+  [data-theme="dark"] .banner.info{background:#10233f;color:#93c5fd}
+  [data-theme="dark"] .empty-box{color:#9aa8a3}
+  [data-theme="dark"] .backup-box{background:#121917}
+  [data-theme="dark"] #toast{background:#e8efec;color:#0a0f0d}
+  [data-theme="dark"] [style*="color:#b91c1c"]{color:#f87171!important}
+  [data-theme="dark"] [style*="color:#b45309"]{color:#fbbf24!important}
+  [data-theme="dark"] [style*="color:#94a3b8"]{color:#7d8c87!important}
+  [data-theme="dark"] [style*="color:#047857"]{color:#34d399!important}
+
+  /* stock rows: name gets its own line, buttons sit underneath */
+  #stockList .stock-row{flex-wrap:wrap;align-items:flex-start;gap:8px}
+  #stockList .stock-name{flex:1 1 0;min-width:0;white-space:normal;overflow-wrap:anywhere;font-size:15px}
+  #stockList .stock-actions{flex:1 1 100%;display:flex;align-items:center;gap:8px}
+  #stockList .stock-actions .btn-sm{flex:1;justify-content:center;white-space:nowrap;min-height:38px}
+  #stockList .stock-actions .del-btn{flex:none;width:36px;height:36px}
+  .btn-sm{white-space:nowrap}
+  .top>div:first-child{min-width:0;flex:1}
+  .greet{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sync{white-space:nowrap}
+
+  /* design review: touch targets and readable text */
+  .icon-btn{width:40px;height:40px}
+  .qp-chip,.quick-amounts button{padding:8px 14px;min-height:36px}
+  .att-row{min-height:48px}
+  .btn-sm{min-height:40px}
+  .kpi-label{font-size:11px}
+  .hs-val{font-size:11px}
+  .hs-lbl{font-size:11px}
+  .bnav button{font-size:11px}
+  .stock-cost,.kpi-sub{font-size:12px}
+
+  /* sales + expenses as readable rows (no sideways scrolling) */
+  .srow{padding:12px 0;border-top:1px solid #f1f2f1}
+  .srow:first-child{border-top:0}
+  .srow-main{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+  .srow-item{font-weight:700;font-size:15px;min-width:0;overflow-wrap:anywhere}
+  .srow-total{font-weight:800;font-size:15px;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .srow-sub{font-size:12.5px;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+  .srow-foot{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;font-size:13px}
+  .srow-acts{margin-left:auto;display:flex;gap:4px}
+  .srow-acts .del-btn{width:40px;height:40px}
+  [data-theme="dark"] .srow{border-color:#1b2522}
+  /* customers: same layout as stock rows */
+  #custRows .stock-row{flex-wrap:wrap;align-items:flex-start;gap:8px}
+  #custRows .stock-name{flex:1 1 0;min-width:0;white-space:normal;overflow-wrap:anywhere;font-size:15px}
+  #custRows .stock-actions{flex:1 1 100%;display:flex;align-items:center;gap:8px}
+  #custRows .stock-actions .btn-sm{flex:1;justify-content:center;min-height:40px}
+  #custRows .stock-actions .del-btn{flex:none;width:40px;height:40px}
+  .ro-tools{display:flex;gap:8px}
+  .ro-tools .btn-sm{flex:1;justify-content:center;min-height:44px}
+
+  /* light mode: give surfaces definition */
+  html:not([data-theme="dark"]) body{background:#eceff0}
+  html:not([data-theme="dark"]) .card,html:not([data-theme="dark"]) .kpi,html:not([data-theme="dark"]) .qa button{background:#fff;border:1px solid #d9dfdc;box-shadow:0 1px 2px rgba(16,24,20,.06)}
+  html:not([data-theme="dark"]) .kpi.warn{background:#fffbeb;border:1px solid #f3dc9a}
+  html:not([data-theme="dark"]) .debt-card{background:#fafbfa;border:1px solid #e1e6e3}
+  html:not([data-theme="dark"]) .sale-form input,html:not([data-theme="dark"]) .sale-form select,html:not([data-theme="dark"]) .modal input,html:not([data-theme="dark"]) .modal select,html:not([data-theme="dark"]) .searchbox,html:not([data-theme="dark"]) .tax-grid input{border:1px solid #c9d1cd;background:#fff}
+  html:not([data-theme="dark"]) .btn-sm{background:#f1f4f2;border:1px solid #dbe1de}
+  html:not([data-theme="dark"]) .btn-paid,html:not([data-theme="dark"]) .btn-ro,html:not([data-theme="dark"]) .btn-wa{background:#ecfdf5;border:1px solid #bde9d3}
+  html:not([data-theme="dark"]) .qp-chip,html:not([data-theme="dark"]) .quick-amounts button{border:1px solid #d9dfdc}
+  html:not([data-theme="dark"]) .srow,html:not([data-theme="dark"]) .att-row,html:not([data-theme="dark"]) .stock-row,html:not([data-theme="dark"]) .rep-row,html:not([data-theme="dark"]) .ph-row{border-color:#e3e8e5}
+  html:not([data-theme="dark"]) .tbl td{border-bottom-color:#e3e8e5}
+  html:not([data-theme="dark"]) .del-btn{color:#5b6577}
+  html:not([data-theme="dark"]) .bnav{box-shadow:0 -1px 0 #d9dfdc;background:#fff}
+  html:not([data-theme="dark"]) .icon-btn{border-color:#d1d8d4}
+
+  body[data-page="stock"] .fab,body[data-page="people"] .fab,body[data-page="more"] .fab{display:none}
+  .fab{width:52px;height:52px;right:14px}
+  /* tighter sales rows */
+  .srow{padding:10px 0}
+  .srow-foot{margin-top:2px}
+  .srow-acts .del-btn{width:36px;height:36px}
+  #custRows .stock-row{padding:12px 0}
+  #custRows .stock-actions .btn-sm{flex:1}
+
+  .att-row{gap:6px}
+  .att-row>span:first-child{flex:1}
+  .att-x{appearance:none;border:0;background:transparent;color:#5b6577;width:36px;height:36px;border-radius:10px;font-size:14px;flex:none;cursor:pointer;margin-right:-6px}
+  .att-x:active{background:#eef1ef}
+  [data-theme="dark"] .att-x{color:#9aa8a3}
+  [data-theme="dark"] .att-x:active{background:#1b2522}
 </style>
 </head>
 <body>
@@ -310,10 +565,12 @@
 
 <header class="top">
   <div>
+    <p class="greet" id="greet">Welcome back</p>
     <h1>My Sales Book</h1>
-    <p class="sub">Simple sales tracking</p>
   </div>
   <div class="top-actions">
+    <button type="button" class="icon-btn" id="btnTheme" aria-label="Switch to dark mode"></button>
+    <span class="sync" id="syncPill"><i></i><span>Saved on phone</span></span>
     <button class="icon-btn pulse" id="btnInstall" title="Install app" hidden>📲</button>
   </div>
 </header>
@@ -333,6 +590,31 @@
   <button class="btn-sm" id="installDismiss">Got it</button>
 </div>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <main>
 <div class="tab" id="tab-home">
 <section class="hero">
@@ -342,23 +624,40 @@
   </div>
   <div class="hero-value" id="todayValue">₦0</div>
   <div class="hero-sub">
-    <span id="todayCount">0 sales</span>
-    <span class="dot">·</span>
-    <span id="todayProfit">Profit: ₦0</span>
+    <span class="chip" id="todayDelta" hidden></span>
+    <span class="chip" id="todayCount">0 sales</span>
+    <span class="chip" id="todayProfit">Profit: ₦0</span>
   </div>
   <div class="hero-spark" id="todaySpark"></div>
+  <button type="button" class="hero-share" id="shareDay">Share today's summary</button>
+</section>
+
+<section class="qa">
+  <button type="button" id="qaExp"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/></svg><span>Record expense</span></button>
+  <button type="button" class="amb" id="qaPay"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M16 12h2"/></svg><span>Record payment</span></button>
+</section>
+<section class="card" id="firstRun" hidden>
+  <div class="card-head"><h2>Start here</h2></div>
+  <p class="muted" style="margin:0 0 12px;line-height:1.5">Record your first sale and this screen fills in: today's total, who owes you, and what's running low. It takes about 10 seconds.</p>
+  <button type="button" class="btn-primary" id="frSale" style="width:100%">Record your first sale</button>
+</section>
+
+<section class="card" id="attCard" hidden>
+  <div class="card-head"><h2>Needs attention</h2></div>
+  <div id="attList"></div>
+  <button type="button" class="btn-sm" id="attMore" hidden style="margin-top:8px;width:100%;justify-content:center"></button>
 </section>
 
 <section class="kpis">
   <div class="kpi">
     <div class="kpi-label">Last 7 Days Sales</div>
     <div class="kpi-value" id="weekValue">₦0</div>
-    <div class="kpi-sub" id="weekSub">0 sales</div>
+    <div class="kpi-sub"><span id="weekDelta"></span><span id="weekSub">0 sales</span></div><svg class="sp" id="spWeek" viewBox="0 0 120 30" preserveAspectRatio="none" aria-hidden="true"></svg>
   </div>
   <div class="kpi">
     <div class="kpi-label">Last 30 Days Sales</div>
     <div class="kpi-value" id="monthValue">₦0</div>
-    <div class="kpi-sub" id="monthSub">0 sales</div>
+    <div class="kpi-sub"><span id="monthDelta"></span><span id="monthSub">0 sales</span></div><svg class="sp" id="spMonth" viewBox="0 0 120 30" preserveAspectRatio="none" aria-hidden="true"></svg>
   </div>
   <div class="kpi warn">
     <div class="kpi-label">Money Owed to You</div>
@@ -372,7 +671,10 @@
   </div>
 </section>
 
-<button type="button" class="btn-sm" id="homeExpBtn" style="width:100%;justify-content:center;margin-bottom:10px;padding:10px;background:#fff">− Record an expense</button>
+<section class="card" id="topCard" hidden>
+  <div class="card-head"><h2>Top sellers</h2><span class="muted">Last 7 days</span></div>
+  <div id="topList"></div>
+</section>
 
 <section class="card" id="delCard" style="border-left:4px solid #3b82f6" hidden>
   <div class="card-head"><h2>Orders to Deliver</h2><span class="muted" id="delCount"></span></div>
@@ -384,12 +686,7 @@
 <section class="card">
   <div class="card-head"><h2>Sales</h2><span class="muted" id="salesCount"></span></div>
   <input type="text" class="searchbox" id="salesQ" placeholder="Search item or customer">
-  <div class="table-wrap">
-    <table class="tbl">
-      <thead><tr><th>Date</th><th>Item</th><th class="num">Qty</th><th class="num">Total</th><th>Payment</th><th>Customer</th><th class="num">Owing</th><th></th></tr></thead>
-      <tbody id="salesBody"></tbody>
-    </table>
-  </div>
+  <div id="salesBody"></div>
   <button type="button" class="btn-sm" id="salesMore" hidden style="margin-top:10px;width:100%">Show all</button>
   <div class="empty-box" id="salesEmpty"><span class="big">🧾</span>No sales yet. Tap the green + to record your first sale.</div>
 </section>
@@ -397,12 +694,7 @@
 <section class="card" id="expCard" >
   <div class="card-head"><h2>Expenses</h2><button type="button" class="btn-sm btn-paid" id="btnAddExp">+ Add expense</button></div>
   <div class="muted" id="expTotal" style="margin-bottom:8px"></div>
-  <div class="table-wrap">
-    <table class="tbl" style="min-width:420px">
-      <thead><tr><th>Date</th><th>Description</th><th class="num">Amount</th><th></th></tr></thead>
-      <tbody id="expBody"></tbody>
-    </table>
-  </div>
+  <div class="table-wrap"><div id="expBody"></div></div>
   <button type="button" class="btn-sm" id="expMore" hidden style="margin-top:10px;width:100%">Show all</button>
 </section>
 </div>
@@ -425,19 +717,55 @@
 
 <div class="tab" id="tab-people" hidden>
 <section class="card" id="debtCard" style="border-left:4px solid #f59e0b" hidden>
-  <div class="card-head"><h2>Who Owes You</h2><span class="muted">Tap to remind or record payment</span></div>
+  <div class="card-head"><h2>Who Owes You</h2><span style="display:flex;align-items:center;gap:8px"><span class="muted" id="debtCount"></span><button type="button" class="icon-btn" id="debtSearchBtn" aria-label="Search who owes you"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button></span></div>
+  <input type="text" class="searchbox" id="debtQ" placeholder="Search who owes you" hidden>
   <div id="debtList"></div>
+  <button type="button" class="btn-sm" id="debtMore" hidden style="margin-top:10px;width:100%;justify-content:center"></button>
 </section>
 
 <section class="card">
   <div class="card-head"><h2>Customers</h2><span class="muted" id="custCount"></span></div>
   <input type="text" class="searchbox" id="custQ" placeholder="Search customers">
   <div id="custRows"></div>
+  <button type="button" class="btn-sm" id="custMore" hidden style="margin-top:10px;width:100%;justify-content:center"></button>
   <div class="empty-box" id="custEmpty"><span class="big">👥</span>Customers appear here once you record a sale with a name.</div>
 </section>
 </div>
 
 <div class="tab" id="tab-more" hidden>
+<section class="card">
+  <div class="card-head"><h2>My Business</h2><span class="muted">Shows on receipts</span></div>
+  <input type="text" class="searchbox" id="bizName" placeholder="Business name, e.g. Ada's Hair" style="margin:0">
+</section>
+
+<details class="card backup-box" open id="backupBox">
+  <summary>Backup &amp; restore <span class="muted">Tap to open</span></summary>
+  <p class="muted" style="margin:10px 0 12px;line-height:1.5">
+    Your records are saved inside this phone. If you change phones, clear your browser history, or lose this phone, you lose them. <b>Save a backup file every week.</b>
+  </p>
+  <div style="display:flex;gap:10px">
+    <button type="button" class="btn-primary" id="btnBigBackup" style="flex:1">Save backup</button>
+    <button type="button" class="btn-sm" id="btnBigRestore" style="flex:1;justify-content:center;min-height:44px;font-size:14.5px">Restore from file</button>
+  </div>
+</details>
+
+<section class="card" id="taxCard">
+  <div class="card-head"><h2>Export for tax</h2><span class="muted">Records for your accountant</span></div>
+  <div class="tax-presets">
+    <button type="button" class="qp-chip" data-tp="month">This month</button>
+    <button type="button" class="qp-chip" data-tp="lastmonth">Last month</button>
+    <button type="button" class="qp-chip" data-tp="year">This year</button>
+    <button type="button" class="qp-chip" data-tp="lastyear">Last year</button>
+  </div>
+  <div class="tax-grid">
+    <label>From<input type="date" id="xFrom"></label>
+    <label>To<input type="date" id="xTo"></label>
+  </div>
+  <div class="tax-sum" id="xSum"></div>
+  <button type="button" class="btn-primary" id="xCsv" style="width:100%;margin-top:12px">Download CSV (opens in Excel)</button>
+  <p class="muted" style="margin:10px 0 0;line-height:1.5">These are your records, not tax advice. Check with an accountant or your tax office on what you must file.</p>
+</section>
+
 <section class="card">
   <div class="card-head"><h2>Reports</h2><span class="muted">This month so far</span></div>
   <div id="reportBody"></div>
@@ -449,38 +777,85 @@
 </section>
 
 <section class="card">
-  <div class="card-head"><h2>My Business</h2><span class="muted">Shows on receipts</span></div>
-  <input type="text" class="searchbox" id="bizName" placeholder="Business name, e.g. Ada's Hair" style="margin:0">
-</section>
-
-<details class="card backup-box" open id="backupBox">
-  <summary>🛡️ Backup &amp; restore <span class="muted">Tap to open</span></summary>
-  <p class="muted" style="margin:10px 0 12px;line-height:1.5">
-    Your records are saved inside this phone. If you change phones, clear your browser history, or lose this phone, you lose them. <b>Save a backup file every week.</b>
-  </p>
-  <div style="display:flex;gap:10px">
-    <button type="button" class="btn-primary" id="btnBigBackup" style="flex:1;background:linear-gradient(180deg,#3b82f6,#2563eb);border:none;color:#fff;padding:11px;border-radius:10px;font-weight:700;font-size:14px">📥 Save Backup</button>
-    <button type="button" class="btn-primary" id="btnBigRestore" style="flex:1;background:#fff;border:1px solid #cbd5e1;color:#334155;padding:11px;border-radius:10px;font-weight:700;font-size:14px">📤 Restore</button>
-  </div>
-</details>
-
-<section class="card" style="border-color:#fecaca">
-  <button type="button" class="btn-sm" id="btnClear" style="width:100%;color:#b91c1c;border-color:#fecaca">Clear all data</button>
+  <button type="button" class="btn-sm" id="btnClear" style="width:100%;justify-content:center;color:#b91c1c">Clear all data</button>
+  <p class="muted" style="margin:8px 0 0;text-align:center">This cannot be undone. Save a backup first.</p>
 </section>
 
 <footer>My Sales Book · Your records stay on this phone.<br>Back up weekly.</footer>
 </div>
 </main>
 
-<button type="button" class="fab" id="fab" title="Record a sale">+</button>
+<button type="button" class="fab" id="fab" title="Record a sale" aria-label="Record a sale"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
 
 <nav class="bnav">
-  <button data-tab="home" class="on"><span class="ic">🏠</span>Home</button>
-  <button data-tab="sales"><span class="ic">🧾</span>Sales</button>
-  <button data-tab="stock"><span class="ic">📦</span>Stock</button>
-  <button data-tab="people"><span class="ic">👥</span>Customers</button>
-  <button data-tab="more"><span class="ic">⚙️</span>More</button>
+  <button data-tab="home" class="on"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8v10H3z"/></svg></span>Home</button>
+  <button data-tab="sales"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6"/></svg></span>Sales</button>
+  <button data-tab="stock"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8"/></svg></span>Stock</button>
+  <button data-tab="people"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-4 3-6 7-6s7 2 7 6M16 5a3.5 3.5 0 010 7M22 20c0-3-2-5-4-5.5"/></svg></span>Customers</button>
+  <button data-tab="more"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg></span>More</button>
 </nav>
+
+<div class="sheet-overlay" id="cpSheet" hidden>
+  <div class="sheet">
+    <div class="sheet-head"><h2>Who paid you?</h2><button type="button" class="icon-btn" data-close aria-label="Close">✕</button></div>
+    <div id="cpList"></div>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="snSheet" hidden>
+  <div class="sheet">
+    <div class="sheet-head"><h2>Hide this alert</h2><button type="button" class="icon-btn" data-close aria-label="Close">✕</button></div>
+    <p class="muted" id="snText" style="margin:0 0 14px;line-height:1.5"></p>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button type="button" class="btn-sm" data-sn="1" style="justify-content:center;min-height:46px">Hide for today</button>
+      <button type="button" class="btn-sm" data-sn="7" style="justify-content:center;min-height:46px">Hide for 7 days</button>
+      <button type="button" class="btn-sm" data-sn="0" style="justify-content:center;min-height:46px">Hide until something changes</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="cuSheet" hidden>
+  <div class="sheet">
+    <div class="sheet-head"><h2 id="cuTitle">Edit customer</h2><button type="button" class="icon-btn" data-close aria-label="Close">✕</button></div>
+    <form class="sale-form" id="cuForm" autocomplete="off">
+      <label class="full">Name
+        <input type="text" id="cuName">
+      </label>
+      <label class="full">Phone number (WhatsApp)
+        <input type="tel" id="cuPhone" inputmode="tel" placeholder="e.g. 0803 123 4567">
+      </label>
+      <div class="ro-tools full">
+        <button type="button" class="btn-sm" id="cuCall"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .4 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.3a2 2 0 012.1-.4c.9.3 1.8.6 2.8.7a2 2 0 011.7 2z"/></svg> Call</button>
+        <button type="button" class="btn-sm" id="cuPick"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-4 3-6 7-6s7 2 7 6"/></svg> Pick from contacts</button>
+      </div>
+      <div class="ro-hint full">Changing the name to one you already have combines their sales under that name.</div>
+      <button type="submit" class="btn-primary full">Save</button>
+    </form>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="roSheet" hidden>
+  <div class="sheet">
+    <div class="sheet-head"><h2 id="roTitle">Reorder</h2><button type="button" class="icon-btn" data-close aria-label="Close">✕</button></div>
+    <form class="sale-form" id="roForm" autocomplete="off">
+      <label class="full">Supplier name (optional)
+        <input type="text" id="roName" placeholder="e.g. Mr Chidi, Ariaria">
+      </label>
+      <label class="full">Supplier phone (WhatsApp)
+        <input type="tel" id="roPhone" inputmode="tel" placeholder="e.g. 0803 123 4567">
+      </label>
+      <label class="full">How many do you need?
+        <input type="text" id="roQty" inputmode="numeric" placeholder="e.g. 20">
+      </label>
+      <div class="ro-tools full">
+        <button type="button" class="btn-sm" id="roCall"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .4 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.3a2 2 0 012.1-.4c.9.3 1.8.6 2.8.7a2 2 0 011.7 2z"/></svg> Call supplier</button>
+        <button type="button" class="btn-sm" id="roPick"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-4 3-6 7-6s7 2 7 6"/></svg> Pick from contacts</button>
+      </div>
+      <div class="ro-hint full">Saved for this product, so next time it is one tap. Leave the phone empty to pick a contact in WhatsApp.</div>
+      <button type="submit" class="btn-primary full">Send on WhatsApp</button>
+    </form>
+  </div>
+</div>
 
 <div class="sheet-overlay" id="saleSheet" hidden>
   <div class="sheet">
@@ -585,7 +960,7 @@
 (function(){
   var KEY='salesbook_v1', BK='salesbook_lastbackup';
   var state={sales:[],expenses:[],phones:{},stock:{},settings:{}};
-  var payTarget=null, openHist={}, expAll=false, salesAll=false, salesQ='';
+  var payTarget=null, debtAll=false, custAll=false, openHist={}, expAll=false, salesAll=false, salesQ='';
 
   function load(){
     try{var r=localStorage.getItem(KEY); if(r){var d=JSON.parse(r); state.sales=d.sales||[]; state.expenses=d.expenses||[]; state.phones=d.phones||{}; state.stock=d.stock||{}; state.settings=d.settings||{};}}catch(e){}
@@ -599,14 +974,7 @@
   function ymd(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
   function today(){return ymd(new Date());}
   function daysAgo(n){var d=new Date();d.setDate(d.getDate()-n);return ymd(d);}
-  
-  // Formats negative money as -₦36,285 instead of ₦-36,285
-  function naira(n){
-    n = Math.round((n||0)*100)/100;
-    if(n < 0) return '-₦' + Math.abs(n).toLocaleString('en-NG',{maximumFractionDigits:2});
-    return '₦' + n.toLocaleString('en-NG',{maximumFractionDigits:2});
-  }
-  
+  function naira(n){n=Math.round((n||0)*100)/100;return '₦'+n.toLocaleString('en-NG',{maximumFractionDigits:2});}
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
   function fmtDate(s){var p=s.split('-');var d=new Date(+p[0],+p[1]-1,+p[2]);return d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});}
   var tt;
@@ -644,10 +1012,11 @@
     if(m==='Cash')return 'b-cash'; if(m==='Bank Transfer')return 'b-transfer'; if(m==='POS')return 'b-pos';
     return 'b-credit';
   }
+  function lossOf(s){if(s.cost==null)return 0;var pr=(s.price-s.cost)*s.qty-(s.disc||0);return pr<0?Math.round(-pr*100)/100:0;}
   function sumSales(from,to){
     var t=0,c=0,p=0;
     state.sales.forEach(function(s){
-      if(s.date>=from&&s.date<=to){t+=s.total;c++; if(s.cost!=null)p+=(s.price-s.cost)*s.qty+(s.fee||0)-(s.disc||0);}
+      if(s.date>=from&&s.date<=to){t+=s.total;c++; if(s.cost!=null)p+=(s.price-s.cost)*s.qty-(s.disc||0);}
     });
     return {total:t,count:c,profit:p};
   }
@@ -661,7 +1030,6 @@
     $('todayValue').textContent=naira(tS.total);
     $('todayCount').textContent=tS.count+(tS.count===1?' sale':' sales');
     $('todayProfit').textContent='Profit: '+naira(tS.profit);
-    
     var w=sumSales(daysAgo(6),td), m=sumSales(daysAgo(29),td);
     $('weekValue').textContent=naira(w.total); $('weekSub').textContent=w.count+(w.count===1?' sale':' sales');
     $('monthValue').textContent=naira(m.total); $('monthSub').textContent=m.count+(m.count===1?' sale':' sales');
@@ -673,9 +1041,7 @@
 
     var exp=sumExp(daysAgo(29),td);
     if(m.profit||exp){
-      var net = m.profit-exp;
-      $('profitValue').textContent=naira(net);
-      $('profitValue').style.color = net < 0 ? '#dc2626' : '#047857'; 
+      $('profitValue').textContent=naira(m.profit-exp);
       $('profitSub').textContent='Profit '+naira(m.profit)+' − expenses '+naira(exp);
     }else{
       $('profitValue').textContent='—'; $('profitSub').textContent='Add cost per unit to see profit';
@@ -696,7 +1062,7 @@
       var dn=new Date(x.d+'T00:00:00').toLocaleDateString('en-GB',{weekday:'short'});
       return '<div class="hs-col'+(k===6?' today':'')+'"><div class="hs-track"><div class="hs-val">'+short(x.v)+'</div><div class="hs-bar" style="height:'+bh+'px"></div></div><div class="hs-lbl">'+(k===6?'Today':dn)+'</div></div>';
     }).join('')+'</div>';
-    // payment methods
+    // payment methods (money actually received in last 30 days by sale date)
     var by={},from=daysAgo(29);
     state.sales.forEach(function(s){if(s.date>=from&&s.date<=td){by[pm(s.payment)]=(by[pm(s.payment)]||0)+s.total;}});
     var keys=Object.keys(by).sort(function(a,b){return by[b]-by[a];}), tot=keys.reduce(function(a,k){return a+by[k];},0);
@@ -707,6 +1073,7 @@
   }
 
   function renderLists(){
+    // suggestions in the sale form come from My Stock only
     var prods={},custs={};
     state.sales.slice().sort(function(a,b){return a.date<b.date?1:-1;}).forEach(function(s){
       var k=skey(s.product); if(!prods[k])prods[k]={name:s.product,price:s.price,cost:s.cost,n:0}; prods[k].n++;
@@ -736,19 +1103,12 @@
     $('salesMore').hidden=q||allRows.length<=5; $('salesMore').textContent=salesAll?'Show less':'Show all ('+allRows.length+')';
     $('salesCount').textContent=state.sales.length+(state.sales.length===1?' sale':' sales')+' total';
     $('salesEmpty').hidden=state.sales.length>0;
-    
-    // UPDATED: Added margin-left so Pending and Loss badges don't touch
     $('salesBody').innerHTML=rows.map(function(s){
       var b=bal(s);
-      var isLoss = (s.cost != null && s.price < s.cost);
-      var lossBadge = isLoss ? '<span class="badge b-credit" style="font-size:10px;padding:2px 6px;margin-left:4px">⚠️ Loss</span>' : '';
-      var pendBadge = s.delivery==='Pending' ? '<span class="badge b-partial" style="margin-left:4px">Pending</span>' : '';
-      
-      return '<tr><td>'+fmtDate(s.date)+'</td><td>'+esc(s.product)+pendBadge+lossBadge+'</td><td class="num">'+s.qty+'</td><td class="num">'+naira(s.total)+
-        '</td><td><span class="badge '+badgeClass(s.payment)+'">'+esc(pm(s.payment))+'</span></td><td>'+esc(s.customer||'—')+
-        '</td><td class="num '+(b>0?'bal-red':'bal-ok')+'">'+(b>0?naira(b):'—')+'</td><td style="white-space:nowrap"><button class="del-btn" data-rc="'+s.id+'" title="Send receipt">🧾</button><button class="del-btn" data-del="'+s.id+'" title="Delete">×</button></td></tr>';
+      return '<div class="srow"><div class="srow-main"><div class="srow-item">'+esc(s.product)+(lossOf(s)?' <span class="badge b-loss">\u26A0 Loss '+naira(lossOf(s))+'</span>':'')+(s.delivery==='Pending'?' <span class="badge b-partial">Pending</span>':'')+'</div><div class="srow-total">'+naira(s.total)+'</div></div>'+
+        '<div class="srow-sub">'+fmtDate(s.date)+' · '+s.qty+(s.qty===1?' item':' items')+' · '+(s.customer?esc(s.customer):'no name')+'</div>'+
+        '<div class="srow-foot"><span class="badge '+badgeClass(s.payment)+'">'+esc(pm(s.payment))+'</span>'+(b>0?'<span class="bal-red">Owes '+naira(b)+'</span>':'')+'<span class="srow-acts"><button class="del-btn" data-rc="'+s.id+'" aria-label="Send receipt"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6"/></svg></button><button class="del-btn" data-del="'+s.id+'" aria-label="Delete sale">×</button></span></div></div>';
     }).join('');
-    
     $('salesBody').querySelectorAll('[data-del]').forEach(function(b){
       b.onclick=function(){if(confirm('Delete this sale?')){state.sales.forEach(function(s){if(s.id===b.getAttribute('data-del')&&s.stockKey&&state.stock[s.stockKey])state.stock[s.stockKey].qty+=s.stockUsed||0;});state.sales=state.sales.filter(function(s){return s.id!==b.getAttribute('data-del');});save();render();toast('Sale deleted');}};
     });
@@ -756,12 +1116,13 @@
     $('salesBody').querySelectorAll('[data-rc]').forEach(function(b){b.onclick=function(){sendReceipt(b.getAttribute('data-rc'));};});
 
     // expenses
-    var exAll=state.expenses.slice().sort(function(a,b){return a.date<b.date?1:-1;}), ex=expAll?exAll:exAll.slice(0,3);
+    var exAll=state.expenses.slice().sort(function(a,b){return a.date<b.date?1:-1;}), ex=expAll?exAll.slice(0,50):exAll.slice(0,3);
     $('expMore').hidden=exAll.length<=3; $('expMore').textContent=expAll?'Show less':'Show all ('+exAll.length+')';
     $('expCard').hidden=false; $('expBody').closest('.table-wrap').style.display=state.expenses.length?'':'none';
     $('expTotal').textContent='Last 30 days: '+naira(sumExp(daysAgo(29),today()));
     $('expBody').innerHTML=ex.map(function(e){
-      return '<tr><td>'+fmtDate(e.date)+'</td><td>'+esc(e.desc)+'</td><td class="num">'+naira(e.amount)+'</td><td><button class="del-btn" data-xdel="'+e.id+'" title="Delete">×</button></td></tr>';
+      return '<div class="srow"><div class="srow-main"><div class="srow-item">'+esc(e.desc)+'</div><div class="srow-total">'+naira(e.amount)+'</div></div>'+
+        '<div class="srow-foot"><span class="srow-sub" style="margin:0">'+fmtDate(e.date)+'</span><span class="srow-acts"><button class="del-btn" data-xdel="'+e.id+'" aria-label="Delete expense">×</button></span></div></div>';
     }).join('');
     $('expBody').querySelectorAll('[data-xdel]').forEach(function(b){
       b.onclick=function(){if(confirm('Delete this expense?')){state.expenses=state.expenses.filter(function(e){return e.id!==b.getAttribute('data-xdel');});save();render();toast('Expense deleted');}};
@@ -779,9 +1140,12 @@
     return g;
   }
   function renderDebts(){
-    var g=groupDebts(), keys=Object.keys(g).sort(function(a,b){return g[b].owed-g[a].owed;});
-    $('debtCard').hidden=!keys.length;
-    $('debtList').innerHTML=keys.map(function(k){
+    var g=groupDebts(), allKeys=Object.keys(g).sort(function(a,b){return g[b].owed-g[a].owed;}), dq=($('debtQ').value||'').trim().toLowerCase();
+    var fk=dq?allKeys.filter(function(k){return k.indexOf(dq)>-1;}):allKeys, keys=(debtAll||dq)?fk:fk.slice(0,5);
+    $('debtCard').hidden=!allKeys.length;
+    $('debtCount').textContent=allKeys.length+(allKeys.length===1?' person':' people');
+    $('debtMore').hidden=!!dq||fk.length<=5; $('debtMore').textContent=debtAll?'Show less':'Show all ('+fk.length+')';
+    $('debtList').innerHTML=(dq&&!keys.length)?'<div class="empty-box">No one matches that name.</div>':keys.map(function(k){
       var d=g[k], tot=0, pd=0, items=[];
       d.sales.forEach(function(s){tot+=s.total;pd+=paid(s);items.push(s.qty+'× '+s.product);});
       var pct=tot?Math.min(100,pd/tot*100):0, hist=[];
@@ -850,10 +1214,11 @@
       var st=state.stock[k], s=stockState(st);
       return '<div class="stock-row"><div class="stock-name">'+esc(st.name)+(st.cost!=null?'<span class="stock-cost">Cost '+naira(st.cost)+' each</span>':'')+'</div>'+
         '<div class="stock-qty '+s+'">'+st.qty+'<small>'+(s==='out'?'OUT':(s==='low'?'LOW':'left'))+'</small></div>'+
-        '<button class="btn-sm btn-paid" data-rs="'+esc(k)+'">+ Restock</button>'+
+        '<div class="stock-actions">'+'<button class="btn-sm btn-ro" data-ro="'+esc(k)+'">Reorder</button>'+'<button class="btn-sm btn-paid" data-rs="'+esc(k)+'">+ Restock</button>'+
         '<button class="del-btn" data-se="'+esc(k)+'" title="Correct the count">✎</button>'+
-        '<button class="del-btn" data-sd="'+esc(k)+'" title="Stop tracking">×</button></div>';
+        '<button class="del-btn" data-sd="'+esc(k)+'" title="Stop tracking">×</button></div></div>';
     }).join('');
+    $('stockList').querySelectorAll('[data-ro]').forEach(function(b){b.onclick=function(){openReorder(b.getAttribute('data-ro'));};});
     $('stockList').querySelectorAll('[data-rs]').forEach(function(b){
       b.onclick=function(){
         var k=b.getAttribute('data-rs'), n=parseInt(prompt('How many units did you add to '+state.stock[k].name+'?'),10);
@@ -902,9 +1267,10 @@
   function showTab(n){
     ['home','sales','stock','people','more'].forEach(function(t){$('tab-'+t).hidden=(t!==n);});
     document.querySelectorAll('.bnav button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-tab')===n);});
+    document.body.setAttribute('data-page',n);
     document.body.scrollTop=0; window.scrollTo(0,0);
   }
-  function closeSheets(){$('saleSheet').hidden=true;$('expSheet').hidden=true;try{document.activeElement.blur();}catch(e){}}
+  function closeSheets(){$('saleSheet').hidden=true;$('expSheet').hidden=true;$('roSheet').hidden=true;$('cpSheet').hidden=true;$('cuSheet').hidden=true;$('snSheet').hidden=true;try{document.activeElement.blur();}catch(e){}}
   function openSheet(id,focusId){setDefaults();$(id).hidden=false;setTimeout(function(){$(focusId).focus();},120);}
   function renderCustomers(){
     var g={},total=0;
@@ -914,22 +1280,18 @@
       g[k].orders++; g[k].total+=s.total; g[k].owe+=bal(s); if(s.date>g[k].last)g[k].last=s.date;
     });
     var q=($('custQ').value||'').trim().toLowerCase();
-    var keys=Object.keys(g).filter(function(k){return !q||k.indexOf(q)>-1;}).sort(function(a,b){return g[b].total-g[a].total;}).slice(0,100);
+    var keys=Object.keys(g).filter(function(k){return !q||k.indexOf(q)>-1;}).sort(function(a,b){return g[b].total-g[a].total;});
+    var shown=(custAll||q)?keys:keys.slice(0,8);
+    $('custMore').hidden=!!q||keys.length<=8; $('custMore').textContent=custAll?'Show less':'Show all ('+keys.length+')';
     $('custCount').textContent=total+(total===1?' customer':' customers');
-    $('custEmpty').hidden=total>0;
-    if(keys.length){
-      $('custRows').innerHTML=keys.map(function(k){
-        var c=g[k], ph=state.phones[k];
-        return '<div class="stock-row"><div class="stock-name">'+esc(c.name)+'<span class="stock-cost">'+c.orders+(c.orders===1?' order':' orders')+' · last '+fmtDate(c.last)+'</span></div>'+
-          '<div class="stock-qty ok" style="min-width:96px">'+naira(c.total)+(c.owe>0?'<small style="color:#b91c1c">owes '+naira(c.owe)+'</small>':'<small>spent</small>')+'</div>'+
-          (ph?'<a class="btn-sm btn-wa" target="_blank" rel="noopener" href="https://wa.me/'+waNum(ph)+'">💬</a>':'')+
-          '<button class="del-btn" data-cm="'+esc(k)+'" title="Rename or merge">✎</button><button class="del-btn" data-cx="'+esc(k)+'" title="Remove name">×</button></div>';
-      }).join('');
-    }else if(total>0&&q){
-      $('custRows').innerHTML='<div class="empty-box" style="padding:18px 12px">No customer matches "'+esc(q)+'".</div>';
-    }else{
-      $('custRows').innerHTML='';
-    }
+    custG=g; $('custEmpty').hidden=total>0;
+    $('custRows').innerHTML=shown.map(function(k){
+      var c=g[k], ph=state.phones[k];
+      return '<div class="stock-row"><div class="stock-name">'+esc(c.name)+'<span class="stock-cost">'+c.orders+(c.orders===1?' order':' orders')+' · last '+fmtDate(c.last)+'</span></div>'+
+        '<div class="stock-qty ok" style="min-width:96px">'+naira(c.total)+(c.owe>0?'<small style="color:#b91c1c">owes '+naira(c.owe)+'</small>':'<small>spent</small>')+'</div>'+
+        '<div class="stock-actions">'+(ph?'<a class="btn-sm btn-wa" target="_blank" rel="noopener" href="https://wa.me/'+waNum(ph)+'">WhatsApp</a><a class="btn-sm" href="tel:'+esc(ph.replace(/[^\d+]/g,''))+'">Call</a>':'<button type="button" class="btn-sm" data-cm="'+esc(k)+'" data-focus="phone">+ Add phone number</button>')+
+        '<button class="del-btn" data-cm="'+esc(k)+'" aria-label="Edit name or phone" title="Edit name or phone">✎</button><button class="del-btn" data-cx="'+esc(k)+'" aria-label="Remove name" title="Remove name">×</button></div></div>';
+    }).join('');
     $('custRows').querySelectorAll('[data-cx]').forEach(function(b){
       b.onclick=function(){
         var k=b.getAttribute('data-cx'), c=g[k];
@@ -939,21 +1301,7 @@
         delete state.phones[k]; save(); render(); toast('Name removed');
       };
     });
-    $('custRows').querySelectorAll('[data-cm]').forEach(function(b){
-      b.onclick=function(){
-        var k=b.getAttribute('data-cm'), c=g[k];
-        var nn=prompt('New name for "'+c.name+'".\nIf it matches another customer, their sales are combined.',c.name);
-        if(nn===null)return; nn=nn.trim(); if(!nn)return;
-        var nk=skey(nn), target=g[nk]&&nk!==k?g[nk].name:nn;
-        if(nk!==k&&g[nk]&&!confirm('Combine "'+c.name+'" with "'+g[nk].name+'"? All '+c.orders+(c.orders===1?' sale goes':' sales go')+' under "'+g[nk].name+'".'))return;
-        state.sales.forEach(function(s){if(skey(s.customer)===k)s.customer=target;});
-        if(nk!==k){
-          if(state.phones[k]&&!state.phones[nk])state.phones[nk]=state.phones[k];
-          delete state.phones[k];
-        }
-        save(); render(); toast(nk!==k&&g[nk]?'Customers combined':'Name changed');
-      };
-    });
+    $('custRows').querySelectorAll('[data-cm]').forEach(function(b){b.onclick=function(){openCust(b.getAttribute('data-cm'),b.getAttribute('data-focus'));};});
   }
   function renderReports(){
     var n=new Date(), y=n.getFullYear(), m=n.getMonth();
@@ -975,7 +1323,246 @@
       (bc?'⭐ Best customer: <b>'+esc(bc.n)+'</b> ('+naira(bc.t)+')<br>':'')+
       '<span style="color:#94a3b8">Profit counts sales where you entered a cost.</span></div>';
   }
-  function render(){renderDash();renderLists();renderDeliveries();renderDebts();renderStock();renderCustomers();renderReports();checkBackup();
+
+  var attAll=false, snzKey=null, dupMap={};
+  function getSnz(){var o={};try{o=JSON.parse(localStorage.getItem('salesbook_snooze')||'{}');}catch(e){} var n=Date.now(),c={}; Object.keys(o).forEach(function(k){if(o[k]>n)c[k]=o[k];}); return c;}
+  function setSnz(k,until){var o=getSnz(); o[k]=until; try{localStorage.setItem('salesbook_snooze',JSON.stringify(o));}catch(e){}}
+  function openSnooze(k,label){snzKey=k;$('snText').textContent=label;$('snSheet').hidden=false;}
+  function pct(cur,prev){if(!prev)return null;return Math.round((cur-prev)/prev*100);}
+  function deltaHTML(d){if(d===null)return '';return '<span class="'+(d>=0?'up':'down')+'">'+(d>=0?'\u25B2 ':'\u25BC ')+Math.abs(d)+'% \u00B7 </span>';}
+  function spark(el,vals){
+    var mx=Math.max.apply(null,vals.concat([1])),n=vals.length;
+    var pts=vals.map(function(v,i){return [i/(n-1)*120,28-(v/mx)*24];});
+    var line=pts.map(function(q,i){return (i?'L':'M')+q[0].toFixed(1)+' '+q[1].toFixed(1);}).join(' ');
+    el.innerHTML='<defs><linearGradient id="g'+el.id+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#10b981" stop-opacity=".2"/><stop offset="1" stop-color="#10b981" stop-opacity="0"/></linearGradient></defs><path d="'+line+' L120 30 L0 30Z" fill="url(#g'+el.id+')"/><path d="'+line+'" fill="none" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>';
+  }
+  function renderExtras(){
+    var td=today(), t=sumSales(td,td).total, y=sumSales(daysAgo(1),daysAgo(1)).total;
+    var d=pct(t,y), chip=$('todayDelta');
+    chip.hidden=(d===null); if(d!==null)chip.textContent=(d>=0?'\u25B2 ':'\u25BC ')+Math.abs(d)+'% vs yesterday';
+    var w=sumSales(daysAgo(6),td).total, pw=sumSales(daysAgo(13),daysAgo(7)).total;
+    var m=sumSales(daysAgo(29),td).total, pm2=sumSales(daysAgo(59),daysAgo(30)).total;
+    $('weekDelta').innerHTML=deltaHTML(pct(w,pw)); $('monthDelta').innerHTML=deltaHTML(pct(m,pm2));
+    var wk=[],mo=[],i;
+    for(i=6;i>=0;i--)wk.push(sumSales(daysAgo(i),daysAgo(i)).total);
+    for(i=9;i>=0;i--)mo.push(sumSales(daysAgo(i*3+2),daysAgo(i*3)).total);
+    spark($('spWeek'),wk); spark($('spMonth'),mo);
+    var hr=new Date().getHours(), g=hr<12?'Good morning':hr<17?'Good afternoon':'Good evening';
+    $('greet').textContent=g+(state.settings.bizName?', '+state.settings.bizName:'');
+    var sp=$('syncPill'); var on=navigator.onLine!==false; sp.className='sync'+(on?'':' off'); sp.lastChild.textContent=on?'Saved on phone':'Offline';
+    // top sellers (7 days)
+    var tp={}; state.sales.forEach(function(x){if(x.date>=daysAgo(6)&&x.date<=td){var k3=skey(x.product); tp[k3]=tp[k3]||{n:x.product,t:0}; tp[k3].t+=x.total;}});
+    var tl=Object.keys(tp).map(function(k){return tp[k];}).sort(function(a,b){return b.t-a.t;}).slice(0,3), tm=tl.length?tl[0].t:1;
+    $('topCard').hidden=!tl.length;
+    $('topList').innerHTML=tl.map(function(x){return '<div class="hbar"><div class="hbar-top"><span>'+esc(x.n)+'</span><span class="val">'+naira(x.t)+'</span></div><div class="hbar-track"><div class="hbar-fill" style="width:'+(x.t/tm*100)+'%;background:#10b981"></div></div></div>';}).join('');
+    // needs attention (every alert can be hidden)
+    var rows=[], snz=getSnz(), nowMs=Date.now(), cutoff=daysAgo(7), over={};
+    dupMap={};
+    function add(key,attrs,text,cls,pill,first){
+      if(snz[key]&&snz[key]>nowMs)return;
+      var h='<div class="att-row" '+attrs+'><span>'+text+'</span><span class="pill '+cls+'">'+pill+'</span><button type="button" class="att-x" data-snz="'+esc(key)+'" aria-label="Hide this alert">\u2715</button></div>';
+      if(first)rows.unshift(h); else rows.push(h);
+    }
+    function dayGap(d){return Math.round((new Date(td+'T00:00:00')-new Date(d+'T00:00:00'))/864e5);}
+    // 1. below-cost sales
+    var lc=0,lt=0,lf=daysAgo(29); state.sales.forEach(function(s){var l=lossOf(s); if(l&&s.date>=lf){lc++;lt+=l;}});
+    if(lc)add('loss:'+lc,'data-go="sales"',lc+(lc===1?' sale':' sales')+' below cost in 30 days','r','\u2212'+naira(lt));
+    // 2. customers who owe you for over a week
+    state.sales.forEach(function(s){var b=bal(s); if(b>0&&s.date<=cutoff){var k=(s.customer||'No name'); var o=over[k]||(over[k]={owe:0,oldest:s.date}); o.owe+=b; if(s.date<o.oldest)o.oldest=s.date;}});
+    Object.keys(over).sort(function(a,b){return over[b].owe-over[a].owe;}).slice(0,3).forEach(function(k){
+      add('owe:'+k+':'+Math.round(over[k].owe),'data-go="people"',esc(k)+' owes '+naira(over[k].owe),'r',Math.max(8,dayGap(over[k].oldest))+' days');
+    });
+    // 3. deliveries pending for 2+ days
+    var pend=state.sales.filter(function(x){return x.delivery==='Pending'&&x.date<=daysAgo(2);});
+    if(pend.length){
+      var od=pend.reduce(function(m,x){return x.date<m?x.date:m;},pend[0].date);
+      add('del:'+pend.length+':'+od,'data-scroll="delCard"',pend.length+(pend.length===1?' delivery':' deliveries')+' still pending after 2+ days','a','Oldest '+dayGap(od)+'d');
+    }
+    // 4. low or out-of-stock
+    Object.keys(state.stock).filter(function(k){return stockState(state.stock[k])!=='ok';}).slice(0,3).forEach(function(k){
+      var st=state.stock[k], out=stockState(st)==='out';
+      add('low:'+k+':'+(out?'out':'low'),'data-ro="'+esc(k)+'"',esc(st.name)+(out?' is out of stock':' running low'),'a','Reorder');
+    });
+    // 5. will run out soon, based on the last 14 days of sales
+    var runs=[];
+    Object.keys(state.stock).forEach(function(k){
+      var st=state.stock[k]; if(stockState(st)!=='ok'||!(st.qty>0))return;
+      var sold=0; state.sales.forEach(function(x){if(skey(x.product)===k&&x.date>=daysAgo(13)&&x.date<=td)sold+=x.qty;});
+      if(sold<3)return; var left=st.qty/(sold/14); if(left<=7)runs.push({k:k,st:st,left:left});
+    });
+    runs.sort(function(a,b){return a.left-b.left;}).slice(0,3).forEach(function(x){
+      var d=Math.max(1,Math.round(x.left));
+      add('run:'+x.k,'data-ro="'+esc(x.k)+'"',esc(x.st.name)+' may run out '+(x.left<1?'today':'in about '+d+(d===1?' day':' days')),'a','Reorder');
+    });
+    // 6. today vs your usual same weekday (last 4 weeks)
+    var prevDays=[1,2,3,4].map(function(w){return sumSales(daysAgo(7*w),daysAgo(7*w)).total;}).filter(function(v){return v>0;});
+    if(prevDays.length>=2){
+      var avg=prevDays.reduce(function(m,v){return m+v;},0)/prevDays.length, tn=sumSales(td,td).total, hr2=new Date().getHours();
+      var wd=new Date().toLocaleDateString('en-GB',{weekday:'long'});
+      if(avg>=1000){
+        if(tn>=avg*1.5)add('sales:'+td+':up','data-go="sales"','Today is '+Math.round((tn/avg-1)*100)+'% above your usual '+wd,'g','\u25B2 '+Math.round((tn/avg-1)*100)+'%');
+        else if(hr2>=18&&tn<avg*0.6)add('sales:'+td+':down','data-go="sales"','Today is '+Math.round((1-tn/avg)*100)+'% below your usual '+wd,'r','\u25BC '+Math.round((1-tn/avg)*100)+'%');
+      }
+    }
+    // 7. customers who may be the same person
+    var cg={}; state.sales.forEach(function(x){if(!x.customer)return; var k4=skey(x.customer); (cg[k4]=cg[k4]||{name:x.customer,n:0}).n++;});
+    var ck=Object.keys(cg), pairs=[];
+    function lev(a,b){var m=[],i,j;for(i=0;i<=a.length;i++)m[i]=[i];for(j=0;j<=b.length;j++)m[0][j]=j;for(i=1;i<=a.length;i++)for(j=1;j<=b.length;j++)m[i][j]=Math.min(m[i-1][j]+1,m[i][j-1]+1,m[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return m[a.length][b.length];}
+    for(var i=0;i<ck.length&&pairs.length<2;i++)for(var j=i+1;j<ck.length&&pairs.length<2;j++){
+      var n1=ck[i].replace(/[^a-z0-9]/g,''), n2=ck[j].replace(/[^a-z0-9]/g,'');
+      if(n1.length<4||n2.length<4)continue;
+      var near=((n1.indexOf(n2)===0||n2.indexOf(n1)===0)&&Math.abs(n1.length-n2.length)<=4)||(Math.min(n1.length,n2.length)>=5&&lev(n1,n2)<=1);
+      if(near)pairs.push([ck[i],ck[j]]);
+    }
+    pairs.forEach(function(pr){
+      var keep=cg[pr[0]].n>=cg[pr[1]].n?pr[0]:pr[1], drop=keep===pr[0]?pr[1]:pr[0], id=pr[0]+'|'+pr[1];
+      dupMap[id]={keep:keep,drop:drop,keepName:cg[keep].name,dropName:cg[drop].name};
+      add('dup:'+id,'data-dup="'+esc(id)+'"','"'+esc(cg[drop].name)+'" and "'+esc(cg[keep].name)+'" may be the same customer','g','Combine');
+    });
+    // 8. stock that is not selling
+    var lastSold={}; state.sales.forEach(function(x){var k2=skey(x.product); if(!lastSold[k2]||x.date>lastSold[k2])lastSold[k2]=x.date;});
+    var slow=[];
+    Object.keys(state.stock).forEach(function(k){
+      var st=state.stock[k]; if(!(st.qty>0))return;
+      var ref=lastSold[k]||st.added; if(!ref)return;
+      var idle=dayGap(ref);
+      if(idle>=30)slow.push({k:k,st:st,idle:idle,stuck:st.cost!=null?st.qty*st.cost:0,never:!lastSold[k]});
+    });
+    slow.sort(function(a,b){return b.idle-a.idle;}).slice(0,2).forEach(function(x){
+      add('slow:'+x.k,'data-go="stock"',esc(x.st.name)+(x.never?' not sold since you added it':' not sold in '+x.idle+' days')+(x.stuck?' ('+naira(x.stuck)+' tied up)':''),'a','Idle');
+    });
+    // 9. missing cost prices
+    var miss={}; state.sales.forEach(function(s){if(s.cost==null)miss[skey(s.product)]=1;});
+    var mn=Object.keys(miss).length;
+    if(mn)add('cost:'+mn,'data-go="stock"',mn+(mn===1?' item':' items')+' missing cost price','g','Add');
+    // 10. backup
+    var lastBk=0; try{lastBk=parseInt(localStorage.getItem(BK)||'0',10);}catch(e){}
+    if((state.sales.length||state.expenses.length)&&(!lastBk||(Date.now()-lastBk)>7*864e5)){
+      add('bk:'+Math.floor(Date.now()/(7*864e5)),'data-bk="1"',lastBk?'No backup for over a week':'You have not saved a backup yet','g','Back up');
+    }
+    $('attCard').hidden=!rows.length;
+    $('firstRun').hidden=!!(state.sales.length||state.expenses.length);
+    $('attList').innerHTML=(attAll?rows:rows.slice(0,5)).join('');
+    $('attMore').hidden=rows.length<=5; $('attMore').textContent=attAll?'Show less':'Show '+(rows.length-5)+' more';
+    var L=$('attList');
+    L.querySelectorAll('[data-ro]').forEach(function(r){r.onclick=function(){openReorder(r.getAttribute('data-ro'));};});
+    L.querySelectorAll('[data-bk]').forEach(function(r){r.onclick=doBackup;});
+    L.querySelectorAll('[data-go]').forEach(function(r){r.onclick=function(){showTab(r.getAttribute('data-go'));};});
+    L.querySelectorAll('[data-scroll]').forEach(function(r){r.onclick=function(){showTab('home');var t=$(r.getAttribute('data-scroll'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'});};});
+    L.querySelectorAll('[data-dup]').forEach(function(r){r.onclick=function(){
+      var d=dupMap[r.getAttribute('data-dup')]; if(!d)return;
+      if(!confirm('Combine "'+d.dropName+'" into "'+d.keepName+'"? All their sales will go under "'+d.keepName+'".'))return;
+      state.sales.forEach(function(x){if(skey(x.customer)===d.drop)x.customer=d.keepName;});
+      if(state.phones[d.drop]&&!state.phones[d.keep])state.phones[d.keep]=state.phones[d.drop];
+      delete state.phones[d.drop]; save(); render(); toast('Customers combined');
+    };});
+    L.querySelectorAll('[data-snz]').forEach(function(x){x.onclick=function(e){e.stopPropagation();openSnooze(x.getAttribute('data-snz'),x.parentNode.firstChild.textContent);};});
+  }
+
+  var roKey=null;
+  function openReorder(k){
+    var st=state.stock[k]; if(!st)return; roKey=k;
+    $('roTitle').textContent='Reorder '+st.name;
+    $('roName').value=st.supplier||''; $('roPhone').value=st.supPhone||''; $('roQty').value='';
+    $('roSheet').hidden=false; setTimeout(function(){$(st.supPhone?'roQty':'roPhone').focus();},120);
+  }
+  $('roForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    var st=state.stock[roKey]; if(!st)return;
+    var q=parseInt($('roQty').value,10); if(!q||q<=0){toast('Enter how many you need');return;}
+    st.supplier=$('roName').value.trim(); st.supPhone=$('roPhone').value.trim(); save();
+    var who=st.supplier?' '+st.supplier:'';
+    var msg='Hello'+who+', I need '+q+' x '+st.name+'. Please confirm the price and when I can get it.'+(state.settings.bizName?'\n\n- '+state.settings.bizName:'');
+    closeSheets(); openWA(st.supPhone,msg); render();
+  });
+
+  $('roCall').onclick=function(){
+    var st=state.stock[roKey]; if(!st)return;
+    var raw=$('roPhone').value.trim(), num=raw.replace(/[^\d+]/g,'');
+    if(num.length<7){toast('Enter the supplier phone first');$('roPhone').focus();return;}
+    st.supplier=$('roName').value.trim(); st.supPhone=raw; save();
+    window.location.href='tel:'+num;
+  };
+  if(!('contacts' in navigator&&'ContactsManager' in window))$('roPick').hidden=true;
+  $('roPick').onclick=function(){
+    navigator.contacts.select(['name','tel'],{multiple:false}).then(function(r){
+      if(!r||!r.length)return;
+      if(r[0].tel&&r[0].tel[0])$('roPhone').value=r[0].tel[0];
+      if(r[0].name&&r[0].name[0]&&!$('roName').value)$('roName').value=r[0].name[0];
+    }).catch(function(){toast('Could not open contacts');});
+  };
+  var custG={}, cuKey=null;
+  function openCust(k,focus){
+    var c=custG[k]; if(!c)return; cuKey=k;
+    $('cuTitle').textContent='Edit '+c.name;
+    $('cuName').value=c.name; $('cuPhone').value=state.phones[k]||'';
+    $('cuSheet').hidden=false;
+    setTimeout(function(){$(focus==='phone'?'cuPhone':'cuName').focus();},120);
+  }
+  $('cuForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    var k=cuKey, c=custG[k]; if(!c)return;
+    var nn=$('cuName').value.trim(); if(!nn){toast('Name cannot be empty');return;}
+    var phn=$('cuPhone').value.trim();
+    var nk=skey(nn), g=custG, target=(g[nk]&&nk!==k)?g[nk].name:nn;
+    if(nk!==k&&g[nk]&&!confirm('Combine "'+c.name+'" with "'+g[nk].name+'"? All '+c.orders+(c.orders===1?' sale goes':' sales go')+' under "'+g[nk].name+'".'))return;
+    if(nk!==k||nn!==c.name)state.sales.forEach(function(x){if(skey(x.customer)===k)x.customer=target;});
+    if(nk!==k)delete state.phones[k];
+    if(phn)state.phones[nk]=phn; else delete state.phones[nk];
+    save(); closeSheets(); render(); toast('Saved');
+  });
+  $('cuCall').onclick=function(){
+    var num=$('cuPhone').value.replace(/[^\d+]/g,'');
+    if(num.length<7){toast('Enter the phone number first');$('cuPhone').focus();return;}
+    window.location.href='tel:'+num;
+  };
+  if(!('contacts' in navigator&&'ContactsManager' in window))$('cuPick').hidden=true;
+  $('cuPick').onclick=function(){
+    navigator.contacts.select(['name','tel'],{multiple:false}).then(function(r){
+      if(r&&r[0]&&r[0].tel&&r[0].tel[0])$('cuPhone').value=r[0].tel[0];
+    }).catch(function(){toast('Could not open contacts');});
+  };
+  function xRange(){return {f:$('xFrom').value||'0000-01-01',t:$('xTo').value||today()};}
+  function setPreset(n){
+    var d=new Date(),y=d.getFullYear(),m=d.getMonth(),f,t;
+    if(n==='month'){f=new Date(y,m,1);t=d;}
+    else if(n==='lastmonth'){f=new Date(y,m-1,1);t=new Date(y,m,0);}
+    else if(n==='year'){f=new Date(y,0,1);t=d;}
+    else{f=new Date(y-1,0,1);t=new Date(y-1,11,31);}
+    $('xFrom').value=ymd(f); $('xTo').value=ymd(t); renderTax();
+  }
+  function custReq(){
+    var need=$('fPayment').value==='Credit (Owe)'||$('fStatus').value==='Pending';
+    $('fCustomer').placeholder=need?'Required':'Optional';
+    $('fCustomer').closest('label').firstChild.textContent=need?'Customer *':'Customer';
+  }
+  function renderTax(){
+    var r=xRange(), a=sumSales(r.f,r.t), ex=sumExp(r.f,r.t), rec=0, owe=0;
+    state.sales.forEach(function(x){if(x.date>=r.f&&x.date<=r.t){rec+=paid(x);owe+=bal(x);}});
+    function row(l,v,b){return '<div class="rep-row"><span>'+l+'</span><span'+(b?' style="font-weight:800"':'')+'>'+v+'</span></div>';}
+    $('xSum').innerHTML=row('Total sales ('+a.count+')',naira(a.total))+row('Money received',naira(rec))+row('Still owed to you',naira(owe))+row('Expenses',naira(ex))+row('Profit on items with cost',naira(a.profit))+row('Profit after expenses',naira(a.profit-ex),1);
+  }
+  function csvCell(v){
+    v=String(v==null?'':v);
+    if(/^[=+\-@]/.test(v)&&isNaN(Number(v)))v="'"+v;
+    return '"'+v.replace(/"/g,'""')+'"';
+  }
+  function downloadCsv(){
+    var r=xRange(), rows=[['Date','Type','Description','Customer','Qty','Unit price','Delivery fee','Discount','Total','Amount paid','Balance owing','Payment method','Cost per unit']];
+    state.sales.filter(function(x){return x.date>=r.f&&x.date<=r.t;}).forEach(function(x){
+      rows.push([x.date,'Sale',x.product,x.customer||'',x.qty,x.price,x.fee||0,x.disc||0,x.total,paid(x),bal(x),pm(x.payment),x.cost==null?'':x.cost]);
+    });
+    state.expenses.filter(function(x){return x.date>=r.f&&x.date<=r.t;}).forEach(function(x){
+      rows.push([x.date,'Expense',x.desc,'','','','','',x.amount,'','','','']);
+    });
+    var body=rows.slice(1).sort(function(a,b){return a[0]<b[0]?-1:1;});
+    var csv='\uFEFF'+[rows[0]].concat(body).map(function(row){return row.map(csvCell).join(',');}).join('\r\n');
+    if(!body.length){toast('Nothing to export in this period');return;}
+    var blob=new Blob([csv],{type:'text/csv;charset=utf-8'}), url=URL.createObjectURL(blob), a=document.createElement('a');
+    a.href=url; a.download='sales-book_'+r.f+'_to_'+r.t+'.csv'; document.body.appendChild(a); a.click();
+    setTimeout(function(){URL.revokeObjectURL(url);a.remove();},1500); toast('CSV downloaded');
+  }
+  function render(){renderDash();renderExtras();renderTax();custReq();renderLists();renderDeliveries();renderDebts();renderStock();renderCustomers();renderReports();checkBackup();
     if(document.activeElement!==$('bizName'))$('bizName').value=state.settings.bizName||'';}
 
   // payment modal
@@ -1013,6 +1600,7 @@
     var cost=costRaw===''?null:parseFloat(costRaw), date=$('fDate').value||today();
     if(!product||!(qty>0)||isNaN(price)||price<0){toast('Fill in item, quantity and price');return;}
     if(pay==='Credit (Owe)'&&!cust){toast('Enter the customer name for credit sales');$('fCustomer').focus();return;}
+    if(status==='Pending'&&!cust){toast('Enter the customer name for pending deliveries');$('fCustomer').focus();return;}
     if(disc>qty*price){toast('Discount is more than the items cost');return;}
     var total=Math.round((qty*price+fee-disc)*100)/100, payments=[];
     if(phone&&!waNum(phone)){toast('Phone number does not look right');$('fPhone').focus();return;}
@@ -1048,7 +1636,7 @@
     var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='sales-book-backup-'+today()+'.json';
     document.body.appendChild(a); a.click(); setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},500);
     try{localStorage.setItem(BK,String(Date.now()));}catch(e){}
-    $('backupBanner').hidden=true; toast('Backup saved');
+    $('backupBanner').hidden=true; toast('Backup saved'); renderExtras();
   }
   function checkBackup(){
     var has=state.sales.length||state.expenses.length, last=0;
@@ -1113,7 +1701,7 @@
     var k=skey(name);
     var cost=parseFloat($('sCost').value); if(isNaN(cost)||cost<0)cost=null;
     if(state.stock[k]){var o=state.stock[k]; o.cost=avgCost(o,qty,cost); o.qty+=qty;o.low=low;toast('Added to existing stock');}
-    else{state.stock[k]={name:name,qty:qty,low:low,cost:cost};toast('Stock added');}
+    else{state.stock[k]={name:name,qty:qty,low:low,cost:cost,added:today()};toast('Stock added');}
     save(); $('sName').value='';$('sQty').value='';$('sLow').value='';$('sCost').value=''; render();
   };
   $('fCustomer').addEventListener('input',function(){
@@ -1124,16 +1712,60 @@
   document.querySelectorAll('.bnav button').forEach(function(b){b.onclick=function(){showTab(b.getAttribute('data-tab'));};});
   $('fab').onclick=function(){openSheet('saleSheet','fProduct');};
   $('btnAddExp').onclick=function(){openSheet('expSheet','eDesc');};
-  $('homeExpBtn').onclick=function(){openSheet('expSheet','eDesc');};
   document.querySelectorAll('[data-close]').forEach(function(b){b.onclick=closeSheets;});
-  ['saleSheet','expSheet'].forEach(function(id){$(id).addEventListener('click',function(e){if(e.target===this)closeSheets();});});
-  $('salesQ').addEventListener('input',function(){salesQ=this.value;salesAll=false;renderLists();});
+  ['saleSheet','expSheet','roSheet','cpSheet','cuSheet','snSheet'].forEach(function(id){$(id).addEventListener('click',function(e){if(e.target===this)closeSheets();});});
+  $('salesQ').addEventListener('input',function(){salesQ=this.value;renderLists();});
   $('custQ').addEventListener('input',renderCustomers);
   $('bizName').addEventListener('input',function(){state.settings.bizName=this.value.trim();save();});
-  var oc=$('owedValue').closest('.kpi'); if(oc){oc.classList.add('clickable');oc.onclick=function(){showTab('people');};}
+  var oc=$('owedValue').closest('.kpi'); if(oc){oc.style.cursor='pointer';oc.onclick=function(){showTab('people');};}
   try{if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0)navigator.serviceWorker.register('sw.js');}catch(e){}
 
-  load(); setDefaults(); render();
+  $('qaExp').onclick=function(){openSheet('expSheet','eDesc');};
+  $('frSale').onclick=function(){openSheet('saleSheet','fProduct');};
+  $('qaPay').onclick=function(){
+    var g=groupDebts(), keys=Object.keys(g).sort(function(a,b){return g[b].owed-g[a].owed;});
+    if(!keys.length){toast('Nobody owes you right now');return;}
+    if(keys.length===1){openPay(keys[0]);return;}
+    $('cpList').innerHTML=keys.map(function(k){return '<div class="att-row" data-cp="'+esc(k)+'"><span>'+esc(g[k].name)+'</span><span class="pill a">'+naira(g[k].owed)+'</span></div>';}).join('');
+    $('cpList').querySelectorAll('[data-cp]').forEach(function(r){r.onclick=function(){var k=r.getAttribute('data-cp');$('cpSheet').hidden=true;openPay(k);};});
+    $('cpSheet').hidden=false;
+  };
+  window.addEventListener('online',renderExtras); window.addEventListener('offline',renderExtras);
+  document.querySelectorAll('[data-tp]').forEach(function(b){b.onclick=function(){setPreset(b.getAttribute('data-tp'));};});
+  $('xFrom').addEventListener('change',renderTax); $('xTo').addEventListener('change',renderTax);
+  $('shareDay').onclick=function(){
+    var td=today(), t=sumSales(td,td), ex=sumExp(td,td), owed=0;
+    state.sales.forEach(function(x){owed+=bal(x);});
+    var L=[(state.settings.bizName?'*'+state.settings.bizName+'* ':'')+'Daily summary - '+fmtDate(td),'',
+      'Sales: '+naira(t.total)+' ('+t.count+(t.count===1?' sale)':' sales)')];
+    if(t.profit)L.push('Profit on items: '+naira(t.profit));
+    if(ex)L.push('Expenses: '+naira(ex));
+    L.push('Still owed to me: '+naira(owed));
+    openWA('',L.join('\n'));
+  };
+  $('debtSearchBtn').onclick=function(){var q=$('debtQ');q.hidden=!q.hidden;if(!q.hidden)q.focus();else{q.value='';renderDebts();}};
+  $('debtQ').addEventListener('input',renderDebts);
+  $('debtMore').onclick=function(){debtAll=!debtAll;renderDebts();};
+  $('custMore').onclick=function(){custAll=!custAll;renderCustomers();};
+  var SUN='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+  var MOON='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>';
+  function setTheme(t,save2){
+    document.documentElement.setAttribute('data-theme',t);
+    if(save2){try{localStorage.setItem('salesbook_theme',t);}catch(e){}}
+    var mt=document.querySelector('meta[name="theme-color"]'); if(mt)mt.setAttribute('content',t==='dark'?'#0a0f0d':'#047857');
+    $('btnTheme').innerHTML=t==='dark'?SUN:MOON; $('btnTheme').setAttribute('aria-label',t==='dark'?'Switch to light mode':'Switch to dark mode');
+  }
+  $('btnTheme').onclick=function(){setTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark',true);};
+  setTheme(document.documentElement.getAttribute('data-theme')||'light',false);
+  $('attMore').onclick=function(){attAll=!attAll;renderExtras();};
+  document.querySelectorAll('[data-sn]').forEach(function(b){b.onclick=function(){
+    var d=parseInt(b.getAttribute('data-sn'),10), u;
+    if(d===0)u=9e15; else if(d===1){var m=new Date();m.setHours(24,0,0,0);u=m.getTime();} else u=Date.now()+d*864e5;
+    setSnz(snzKey,u); closeSheets(); renderExtras(); toast('Alert hidden');
+  };});
+  $('xCsv').onclick=downloadCsv;
+  $('fPayment').addEventListener('change',custReq); $('fStatus').addEventListener('change',custReq); custReq();
+  load(); setDefaults(); setPreset('year'); render();
 })();
 </script>
 </body>
