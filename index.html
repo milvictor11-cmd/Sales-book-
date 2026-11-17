@@ -552,6 +552,30 @@
   .att-x:active{background:#eef1ef}
   [data-theme="dark"] .att-x{color:#9aa8a3}
   [data-theme="dark"] .att-x:active{background:#1b2522}
+
+  .ins-steps{margin:0 0 4px;padding-left:22px;line-height:1.6}
+  .ins-steps li{margin-bottom:8px}
+  .ins-more{margin-top:10px}
+  .ins-more summary{cursor:pointer;font-weight:700;min-height:40px;display:flex;align-items:center}
+
+  .fl{display:flex;align-items:center;gap:8px}
+  .help-btn{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;border:1.5px solid #5b6577;color:#5b6577;font-size:13px;font-weight:800;text-transform:none;letter-spacing:0;cursor:pointer;flex:none}
+  .field-hint{font-size:12px;font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0;line-height:1.4}
+  .margin-line{font-size:13.5px;font-weight:700;padding:10px 12px;border-radius:12px;line-height:1.4}
+  .ml-ok{background:#ecfdf5;color:#065f46}
+  .ml-bad{background:#fee2e2;color:#b91c1c}
+  .ml-warn{background:#fffbeb;color:#92400e}
+  [data-theme="dark"] .help-btn{border-color:#9aa8a3;color:#9aa8a3}
+  [data-theme="dark"] .ml-ok{background:#0e2a20;color:#6ee7b7}
+  [data-theme="dark"] .ml-bad{background:#3a1618;color:#fca5a5}
+  [data-theme="dark"] .ml-warn{background:#33270c;color:#fcd34d}
+
+  .lbl-sm{font-size:11px!important;letter-spacing:.03em!important}
+  .naira-input .help-btn{position:absolute;right:8px;top:50%;transform:translateY(-50%)}
+  #fPrice,#fCost,#sCost{padding-right:40px}
+  .quick-picks{grid-column:1/-1;flex-wrap:nowrap;overflow-x:auto;margin:0 0 2px;padding-bottom:2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .quick-picks::-webkit-scrollbar{display:none}
+  .quick-picks .qp-chip{flex:none;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -640,6 +664,7 @@
   <div class="card-head"><h2>Start here</h2></div>
   <p class="muted" style="margin:0 0 12px;line-height:1.5">Record your first sale and this screen fills in: today's total, who owes you, and what's running low. It takes about 10 seconds.</p>
   <button type="button" class="btn-primary" id="frSale" style="width:100%">Record your first sale</button>
+  <button type="button" class="btn-sm" id="frInstall" style="width:100%;justify-content:center;margin-top:8px">Install on your phone</button>
 </section>
 
 <section class="card" id="attCard" hidden>
@@ -709,7 +734,7 @@
     <input type="text" id="sName" list="saleProdList" placeholder="Product name">
     <input type="text" id="sQty" inputmode="numeric" placeholder="Units">
     <input type="text" id="sLow" inputmode="numeric" placeholder="Low at">
-    <span class="naira-input"><span class="naira">₦</span><input type="text" id="sCost" inputmode="decimal" placeholder="Cost per unit (what you paid)"></span>
+    <span class="naira-input"><span class="naira">₦</span><input type="text" id="sCost" inputmode="decimal" placeholder="What you paid for 1"><span class="help-btn" role="button" tabindex="0" data-help="cost" aria-label="What does this mean?">?</span></span>
     <button type="button" class="btn-primary" id="sAdd">+ Add to stock</button>
   </div>
 </section>
@@ -733,6 +758,12 @@
 </div>
 
 <div class="tab" id="tab-more" hidden>
+<section class="card" id="insCard">
+  <div class="card-head"><h2>Install on your phone</h2><span class="muted" id="insState"></span></div>
+  <p class="muted" style="margin:0 0 12px;line-height:1.5" id="insCardText">Put My Sales Book on your home screen. It opens like any app and works without data.</p>
+  <button type="button" class="btn-primary" id="insOpen" style="width:100%">Show me how</button>
+</section>
+
 <section class="card">
   <div class="card-head"><h2>My Business</h2><span class="muted">Shows on receipts</span></div>
   <input type="text" class="searchbox" id="bizName" placeholder="Business name, e.g. Ada's Hair" style="margin:0">
@@ -802,6 +833,25 @@
   </div>
 </div>
 
+<div class="sheet-overlay" id="hlSheet" hidden>
+  <div class="sheet">
+    <div class="sheet-head"><h2 id="hlTitle"></h2><button type="button" class="icon-btn" data-close aria-label="Close">✕</button></div>
+    <div id="hlBody" style="line-height:1.6;font-size:15px"></div>
+    <button type="button" class="btn-primary" data-close style="width:100%;margin-top:16px">Okay, I understand</button>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="insSheet" hidden>
+  <div class="sheet">
+    <div class="sheet-head"><h2>Install My Sales Book</h2><button type="button" class="icon-btn" data-close aria-label="Close">✕</button></div>
+    <p class="muted" id="insLead" style="margin:0 0 12px;line-height:1.5"></p>
+    <button type="button" class="btn-primary" id="insNow" hidden style="width:100%;margin-bottom:14px">Install now</button>
+    <ol class="ins-steps" id="insSteps"></ol>
+    <details class="ins-more"><summary>Steps for other phones</summary><div id="insOther"></div></details>
+    <button type="button" class="btn-sm" id="insShare" style="width:100%;justify-content:center;margin-top:14px">Share the app link on WhatsApp</button>
+  </div>
+</div>
+
 <div class="sheet-overlay" id="snSheet" hidden>
   <div class="sheet">
     <div class="sheet-head"><h2>Hide this alert</h2><button type="button" class="icon-btn" data-close aria-label="Close">✕</button></div>
@@ -861,6 +911,7 @@
   <div class="sheet">
     <div class="sheet-head"><h2>Record a Sale</h2><button type="button" class="icon-btn" data-close>✕</button></div>
     <form class="sale-form" id="saleForm" autocomplete="off">
+    <div class="quick-picks" id="quickPicks" hidden></div>
     <label class="full">Product / Item
       <input type="text" id="fProduct" list="prodList" placeholder="e.g. Bag of rice" required>
       <datalist id="prodList"></datalist>
@@ -870,8 +921,8 @@
     <label>Qty
       <input type="text" id="fQty" inputmode="numeric" min="1" step="1" value="1" required>
     </label>
-    <label>Price per unit
-      <span class="naira-input"><span class="naira">₦</span><input type="text" id="fPrice" inputmode="decimal" min="0" step="0.01" placeholder="0" required></span>
+    <label class="lbl-sm">Selling price for 1
+      <span class="naira-input"><span class="naira">₦</span><input type="text" id="fPrice" inputmode="decimal" min="0" step="0.01" placeholder="0" required><span class="help-btn" role="button" tabindex="0" data-help="price" aria-label="What does this mean?">?</span></span>
     </label>
     <label>Payment
       <select id="fPayment">
@@ -888,9 +939,10 @@
     <label>Customer phone
       <input type="text" id="fPhone" inputmode="tel" placeholder="Optional, e.g. 0803...">
     </label>
-    <label>Cost per unit
-      <span class="naira-input"><span class="naira">₦</span><input type="text" id="fCost" inputmode="decimal" min="0" step="0.01" placeholder="For profit"></span>
+    <label class="lbl-sm">What you paid for 1
+      <span class="naira-input"><span class="naira">₦</span><input type="text" id="fCost" inputmode="decimal" min="0" step="0.01" placeholder="e.g. 8,000"><span class="help-btn" role="button" tabindex="0" data-help="cost" aria-label="What does this mean?">?</span></span>
     </label>
+    <div class="margin-line full" id="fMargin" hidden></div>
     <label>Date
       <input type="date" id="fDate">
     </label>
@@ -911,7 +963,6 @@
     </label>
     <button type="submit" class="btn-primary full">+ Add Sale</button>
   </form>
-    <div class="quick-picks" id="quickPicks"></div>
   </div>
 </div>
 
@@ -1083,16 +1134,17 @@
     $('prodList').innerHTML=sk.map(function(k){return '<option value="'+esc(state.stock[k].name)+'">';}).join('');
     $('saleProdList').innerHTML=Object.keys(prods).map(function(k){return '<option value="'+esc(prods[k].name)+'">';}).join('');
     $('custList').innerHTML=Object.keys(custs).map(function(c){return '<option value="'+esc(c)+'">';}).join('');
-    var top=sk.sort(function(a,b){return (prods[b]?prods[b].n:0)-(prods[a]?prods[a].n:0);}).slice(0,6);
-    $('quickPicks').innerHTML=top.length?'<span class="qp-label">Quick:</span>'+top.map(function(k){
-      return '<button type="button" class="qp-chip" data-p="'+esc(k)+'">'+esc(state.stock[k].name)+'</button>';}).join(''):'';
+    var cand={}; sk.forEach(function(k){cand[k]=1;}); Object.keys(prods).forEach(function(k){cand[k]=1;});
+    var top=Object.keys(cand).sort(function(a,b){return (prods[b]?prods[b].n:0)-(prods[a]?prods[a].n:0);}).slice(0,5);
+    $('quickPicks').hidden=!top.length;
+    $('quickPicks').innerHTML=top.map(function(k){var nm=state.stock[k]?state.stock[k].name:prods[k].name; return '<button type="button" class="qp-chip" data-p="'+esc(k)+'">'+esc(nm)+'</button>';}).join('');
     $('quickPicks').querySelectorAll('.qp-chip').forEach(function(b){
       b.onclick=function(){
         var k=b.getAttribute('data-p'), st=state.stock[k], p=prods[k];
-        $('fProduct').value=st.name;
+        $('fProduct').value=st?st.name:p.name;
         $('fPrice').value=p?p.price:'';
-        $('fCost').value=st.cost!=null?st.cost:(p&&p.cost!=null?p.cost:'');
-        updateStockHint(); $('fQty').focus();
+        $('fCost').value=(st&&st.cost!=null)?st.cost:(p&&p.cost!=null?p.cost:'');
+        updateStockHint(); updateMargin(); $('fQty').focus();
       };
     });
 
@@ -1224,7 +1276,7 @@
         var k=b.getAttribute('data-rs'), n=parseInt(prompt('How many units did you add to '+state.stock[k].name+'?'),10);
         if(!(n>0))return;
         var st=state.stock[k], cur=st.cost!=null?' Leave empty to keep '+naira(st.cost)+'.':'';
-        var c=parseFloat(prompt('Cost per unit for these new ones?'+cur));
+        var c=parseFloat(prompt('What did you pay for 1 of the new ones?'+cur));
         if(!isNaN(c)&&c>=0)st.cost=avgCost(st,n,c);
         st.qty+=n; save(); render(); toast(n+' units added'+(st.cost!=null?' · avg cost '+naira(st.cost):''));
       };
@@ -1270,7 +1322,7 @@
     document.body.setAttribute('data-page',n);
     document.body.scrollTop=0; window.scrollTo(0,0);
   }
-  function closeSheets(){$('saleSheet').hidden=true;$('expSheet').hidden=true;$('roSheet').hidden=true;$('cpSheet').hidden=true;$('cuSheet').hidden=true;$('snSheet').hidden=true;try{document.activeElement.blur();}catch(e){}}
+  function closeSheets(){$('saleSheet').hidden=true;$('expSheet').hidden=true;$('roSheet').hidden=true;$('cpSheet').hidden=true;$('cuSheet').hidden=true;$('snSheet').hidden=true;$('insSheet').hidden=true;$('hlSheet').hidden=true;try{document.activeElement.blur();}catch(e){}}
   function openSheet(id,focusId){setDefaults();$(id).hidden=false;setTimeout(function(){$(focusId).focus();},120);}
   function renderCustomers(){
     var g={},total=0;
@@ -1522,6 +1574,65 @@
       if(r&&r[0]&&r[0].tel&&r[0].tel[0])$('cuPhone').value=r[0].tel[0];
     }).catch(function(){toast('Could not open contacts');});
   };
+  function isInstalled(){return (window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone===true;}
+  var INS={
+    android:['Open this app in <b>Chrome</b>.','Tap the three dots (\u22EE) at the top right.','Tap <b>Install app</b> or <b>Add to Home screen</b>.','Tap <b>Install</b>. The icon appears on your home screen.'],
+    ios:['Open this app in <b>Safari</b>.','Tap the <b>Share</b> button (the square with an arrow).','Scroll down and tap <b>Add to Home Screen</b>.','Tap <b>Add</b>.'],
+    inapp:['You are inside another app, like WhatsApp or Facebook, which cannot install apps.','Tap the three dots (\u22EE) at the top right.','Tap <b>Open in Chrome</b> (or <b>Open in browser</b>).','Then follow the Chrome steps: three dots, then <b>Install app</b>.']
+  };
+  function insList(a){return a.map(function(x){return '<li>'+x+'</li>';}).join('');}
+  function openInstall(){
+    var ua=navigator.userAgent||'', ios=/iPad|iPhone|iPod/.test(ua), inapp=/; wv\)|FBAN|FBAV|Instagram/.test(ua);
+    var key=inapp?'inapp':ios?'ios':'android';
+    $('insLead').textContent=isInstalled()?'It is already installed on this phone. You can open it from your home screen.':'It takes about 20 seconds and uses almost no data.';
+    $('insNow').hidden=!deferred;
+    $('insSteps').innerHTML=insList(INS[key]);
+    var others=[['Android (Chrome)','android'],['iPhone (Safari)','ios'],['Inside WhatsApp or Facebook','inapp']].filter(function(o){return o[1]!==key;});
+    $('insOther').innerHTML=others.map(function(o){return '<p style="margin:10px 0 2px;font-weight:700">'+o[0]+'</p><ol class="ins-steps">'+insList(INS[o[1]])+'</ol>';}).join('');
+    $('insSheet').hidden=false;
+  }
+  function setInsCard(){
+    var on=isInstalled();
+    $('insState').textContent=on?'Installed \u2713':'';
+    $('insCardText').textContent=on?'This phone already has the app on its home screen.':'Put My Sales Book on your home screen. It opens like any app and works without data.';
+    $('insOpen').textContent=on?'Show install steps again':'Show me how';
+    $('frInstall').hidden=on;
+  }
+  $('insOpen').onclick=openInstall; $('frInstall').onclick=openInstall;
+  $('insNow').onclick=function(){if(!deferred)return;deferred.prompt();deferred=null;$('insNow').hidden=true;$('btnInstall').hidden=true;closeSheets();};
+  function appLink(){
+    var u=''; try{u=localStorage.getItem('salesbook_applink')||'';}catch(e){}
+    if(location.protocol.indexOf('http')===0)return location.origin+'/';
+    if(!u){
+      u=(prompt('This copy is not opened from the internet, so it has no link yet. Paste your app link here (for example https://your-app.vercel.app):')||'').trim();
+      if(!/^https?:\/\/\S+\.\S+/.test(u)){if(u)toast('That does not look like a link');return '';}
+      try{localStorage.setItem('salesbook_applink',u);}catch(e){}
+    }
+    return u;
+  }
+  $('insShare').onclick=function(){
+    var link=appLink(); if(!link)return;
+    openWA('','Try My Sales Book. It tracks your sales, stock and who owes you, and works without data: '+link);
+  };
+  setInsCard();
+  var HELP={
+    cost:['What you paid for 1','Put what you paid for one of the thing you sell. It can be one piece, one bag or one carton, whichever way you sell it.<br><br>The app uses it to work out your profit, and it warns you if you sell below cost.'],
+    price:['Selling price for 1','The money one customer pays for one of the thing you sell. If a customer buys 2, the app multiplies it for you.']
+  };
+  function openHelp(k){var h=HELP[k]; if(!h)return; $('hlTitle').textContent=h[0]; $('hlBody').innerHTML=h[1]; $('hlSheet').hidden=false;}
+  document.addEventListener('click',function(e){var h=e.target.closest&&e.target.closest('[data-help]'); if(h){e.preventDefault();openHelp(h.getAttribute('data-help'));}});
+  document.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&e.target.getAttribute&&e.target.getAttribute('data-help')){e.preventDefault();openHelp(e.target.getAttribute('data-help'));}});
+  function numOf(v){var n=parseFloat(String(v||'').replace(/,/g,''));return isNaN(n)?null:n;}
+  function updateMargin(){
+    var el=$('fMargin'), pr=numOf($('fPrice').value), co=numOf($('fCost').value);
+    if(pr===null||co===null||pr<=0||co<0){el.hidden=true;return;}
+    var d=Math.round((pr-co)*100)/100, cls, txt;
+    if(d>0){cls='ml-ok';txt='You make '+naira(d)+' on each';}
+    else if(d===0){cls='ml-warn';txt='No profit on each. You sell at the price you paid.';}
+    else{cls='ml-bad';txt='\u26A0 Below cost: you lose '+naira(-d)+' on each';}
+    el.className='margin-line full '+cls; el.textContent=txt; el.hidden=false;
+  }
+  $('fPrice').addEventListener('input',updateMargin); $('fCost').addEventListener('input',updateMargin);
   function xRange(){return {f:$('xFrom').value||'0000-01-01',t:$('xTo').value||today()};}
   function setPreset(n){
     var d=new Date(),y=d.getFullYear(),m=d.getMonth(),f,t;
@@ -1562,7 +1673,7 @@
     a.href=url; a.download='sales-book_'+r.f+'_to_'+r.t+'.csv'; document.body.appendChild(a); a.click();
     setTimeout(function(){URL.revokeObjectURL(url);a.remove();},1500); toast('CSV downloaded');
   }
-  function render(){renderDash();renderExtras();renderTax();custReq();renderLists();renderDeliveries();renderDebts();renderStock();renderCustomers();renderReports();checkBackup();
+  function render(){renderDash();renderExtras();renderTax();custReq();updateMargin();renderLists();renderDeliveries();renderDebts();renderStock();renderCustomers();renderReports();checkBackup();
     if(document.activeElement!==$('bizName'))$('bizName').value=state.settings.bizName||'';}
 
   // payment modal
@@ -1713,7 +1824,7 @@
   $('fab').onclick=function(){openSheet('saleSheet','fProduct');};
   $('btnAddExp').onclick=function(){openSheet('expSheet','eDesc');};
   document.querySelectorAll('[data-close]').forEach(function(b){b.onclick=closeSheets;});
-  ['saleSheet','expSheet','roSheet','cpSheet','cuSheet','snSheet'].forEach(function(id){$(id).addEventListener('click',function(e){if(e.target===this)closeSheets();});});
+  ['saleSheet','expSheet','roSheet','cpSheet','cuSheet','snSheet','insSheet','hlSheet'].forEach(function(id){$(id).addEventListener('click',function(e){if(e.target===this)closeSheets();});});
   $('salesQ').addEventListener('input',function(){salesQ=this.value;renderLists();});
   $('custQ').addEventListener('input',renderCustomers);
   $('bizName').addEventListener('input',function(){state.settings.bizName=this.value.trim();save();});
